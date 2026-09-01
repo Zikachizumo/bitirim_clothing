@@ -79,6 +79,14 @@
   "mp_m_freemode_01_male_xmas",
   0
  ],
+ "20": [
+  "mp_m_freemode_01_male_freemode_valentines",
+  0
+ ],
+ "21": [
+  "mp_m_freemode_01_male_freemode_valentines",
+  1
+ ],
  "22": [
   "mp_m_freemode_01_male_freemode_business",
   0
@@ -239,6 +247,14 @@
   "mp_m_freemode_01_mp_m_valentines_02",
   1
  ],
+ "62": [
+  "mp_m_freemode_01_mp_m_lowrider_02",
+  0
+ ],
+ "63": [
+  "mp_m_freemode_01_mp_m_lowrider_02",
+  1
+ ],
  "64": [
   "mp_m_freemode_01_mp_m_executive_01",
   0
@@ -379,6 +395,18 @@
   "mp_m_freemode_01_mp_m_christmas2017",
   4
  ],
+ "99": [
+  "mp_m_freemode_01_mp_m_assault",
+  0
+ ],
+ "100": [
+  "mp_m_freemode_01_mp_m_battle",
+  0
+ ],
+ "101": [
+  "mp_m_freemode_01_mp_m_battle",
+  1
+ ],
  "102": [
   "mp_m_freemode_01_mp_m_christmas2018",
   0
@@ -494,6 +522,58 @@
  "130": [
   "mp_m_freemode_01_mp_m_sum",
   3
+ ],
+ "131": [
+  "mp_m_freemode_01_mp_m_heist4",
+  0
+ ],
+ "132": [
+  "mp_m_freemode_01_mp_m_heist4",
+  1
+ ],
+ "133": [
+  "mp_m_freemode_01_mp_m_tuner",
+  0
+ ],
+ "134": [
+  "mp_m_freemode_01_mp_m_tuner",
+  1
+ ],
+ "135": [
+  "mp_m_freemode_01_mp_m_tuner",
+  2
+ ],
+ "136": [
+  "mp_m_freemode_01_mp_m_tuner",
+  3
+ ],
+ "137": [
+  "mp_m_freemode_01_mp_m_tuner",
+  4
+ ],
+ "138": [
+  "mp_m_freemode_01_mp_m_security",
+  0
+ ],
+ "139": [
+  "mp_m_freemode_01_mp_m_security",
+  1
+ ],
+ "140": [
+  "mp_m_freemode_01_mp_m_security",
+  2
+ ],
+ "141": [
+  "mp_m_freemode_01_mp_m_security",
+  3
+ ],
+ "142": [
+  "mp_m_freemode_01_mp_m_security",
+  4
+ ],
+ "143": [
+  "mp_m_freemode_01_mp_m_security",
+  5
  ],
  "144": [
   "mp_m_freemode_01_mp_m_sum2",

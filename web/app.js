@@ -39,6 +39,7 @@
         currency: '$',
         gender: 'male',
         category: null,        // aktif kategori nesnesi
+        entry: null,           // secili parca (adi buradan okunuyor)
         drawable: null,
         texture: 0,
         qty: 1,
@@ -67,6 +68,7 @@
     // ------------------------------------------------------------ ekranlar
     function showRoot() {
         S.category = null;
+        S.entry = null;
         S.drawable = null;
         $('view-root').classList.remove('hidden');
         $('view-category').classList.add('hidden');
@@ -87,6 +89,7 @@
 
     function openCategory(category) {
         S.category = category;
+        S.entry = null;
         S.drawable = null;
         S.texture = 0;
         S.qty = 1;
@@ -123,7 +126,7 @@
             const src = `images/${S.category.slot || S.category.key}_${entry.d}.png`;
             tile.innerHTML =
                 `<div class="thumb fit-${S.category.camera || 'torso'}"><img src="${src}" alt="" onload="if(this.naturalWidth===this.naturalHeight)this.parentElement.classList.add('iso')" onerror="this.replaceWith(document.createTextNode('${entry.d}'))"></div>` +
-                `<div class="cap"><span class="caret">&#9662;</span>${S.category.itemLabel || S.category.label}</div>`;
+                `<div class="cap"><span class="caret">&#9662;</span>${entry.name || S.category.itemLabel || S.category.label}</div>`;
 
             tile.addEventListener('click', () => selectTile(entry, tile));
             grid.appendChild(tile);
@@ -135,6 +138,7 @@
         document.querySelectorAll('.swatches').forEach((s) => s.remove());
         tile.classList.add('selected');
 
+        S.entry = entry;
         S.drawable = entry.d;
         S.texture = entry.t && entry.t.length ? entry.t[0] : 0;
 
@@ -175,7 +179,8 @@
     function showItemCard() {
         S.qty = 1;
         $('qty').textContent = '1';
-        $('item-name').textContent = S.category.itemLabel || S.category.label;
+        $('item-name').textContent =
+            (S.entry && S.entry.name) || S.category.itemLabel || S.category.label;
         $('item-crumb-text').textContent = 'CLOTHING / ' + (S.gender === 'female' ? 'WOMENS' : 'MENS');
         $('item-price').textContent = S.currency + ' ' + fmt(S.category.price);
         $('item-card').classList.remove('hidden');
@@ -240,7 +245,7 @@
                     texture: S.texture,
                 });
                 S.cart.push({
-                    label: S.category.itemLabel || S.category.label,
+                    label: (S.entry && S.entry.name) || S.category.itemLabel || S.category.label,
                     drawable: S.drawable,
                     price: S.category.price,
                 });

@@ -63,6 +63,18 @@
   "mp_m_freemode_01",
   15
  ],
+ "16": [
+  "mp_m_freemode_01_male_freemode_beach",
+  0
+ ],
+ "18": [
+  "mp_m_freemode_01_male_freemode_valentines",
+  0
+ ],
+ "19": [
+  "mp_m_freemode_01_male_freemode_valentines",
+  1
+ ],
  "20": [
   "mp_m_freemode_01_male_freemode_business",
   0
@@ -78,6 +90,10 @@
  "23": [
   "mp_m_freemode_01_male_freemode_hipster",
   1
+ ],
+ "24": [
+  "mp_m_freemode_01_male_freemode_pilot",
+  0
  ],
  "25": [
   "mp_m_freemode_01_male_heist",
@@ -267,6 +283,18 @@
   "mp_m_freemode_01_mp_m_christmas2017",
   6
  ],
+ "74": [
+  "mp_m_freemode_01_mp_m_battle",
+  0
+ ],
+ "75": [
+  "mp_m_freemode_01_mp_m_battle",
+  1
+ ],
+ "76": [
+  "mp_m_freemode_01_mp_m_battle",
+  2
+ ],
  "77": [
   "mp_m_freemode_01_mp_m_christmas2018",
   0
@@ -337,6 +365,34 @@
  ],
  "94": [
   "mp_m_freemode_01_mp_m_vinewood",
+  3
+ ],
+ "95": [
+  "mp_m_freemode_01_mp_m_heist3",
+  0
+ ],
+ "96": [
+  "mp_m_freemode_01_mp_m_heist4",
+  0
+ ],
+ "97": [
+  "mp_m_freemode_01_mp_m_heist4",
+  1
+ ],
+ "98": [
+  "mp_m_freemode_01_mp_m_tuner",
+  0
+ ],
+ "99": [
+  "mp_m_freemode_01_mp_m_tuner",
+  1
+ ],
+ "100": [
+  "mp_m_freemode_01_mp_m_tuner",
+  2
+ ],
+ "101": [
+  "mp_m_freemode_01_mp_m_tuner",
   3
  ],
  "102": [

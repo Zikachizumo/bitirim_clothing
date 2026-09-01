@@ -151,6 +151,10 @@
   "mp_m_freemode_01_p_male_freemode_independence",
   6
  ],
+ "38": [
+  "mp_m_freemode_01_p_male_freemode_pilot",
+  0
+ ],
  "39": [
   "mp_m_freemode_01_p_male_freemode_mplts",
   0
@@ -179,12 +183,56 @@
   "mp_m_freemode_01_p_male_xmas2",
   5
  ],
+ "46": [
+  "mp_m_freemode_01_p_male_heist",
+  0
+ ],
+ "47": [
+  "mp_m_freemode_01_p_male_heist",
+  1
+ ],
+ "48": [
+  "mp_m_freemode_01_p_male_heist",
+  2
+ ],
+ "49": [
+  "mp_m_freemode_01_p_male_heist",
+  3
+ ],
+ "50": [
+  "mp_m_freemode_01_p_male_heist",
+  4
+ ],
+ "51": [
+  "mp_m_freemode_01_p_male_heist",
+  5
+ ],
+ "52": [
+  "mp_m_freemode_01_p_male_heist",
+  6
+ ],
+ "53": [
+  "mp_m_freemode_01_p_male_heist",
+  7
+ ],
+ "54": [
+  "mp_m_freemode_01_p_male_heist",
+  8
+ ],
  "55": [
   "mp_m_freemode_01_p_mp_m_lowrider_01",
   0
  ],
  "56": [
   "mp_m_freemode_01_p_mp_m_lowrider_01",
+  1
+ ],
+ "65": [
+  "mp_m_freemode_01_p_mp_m_executive_01",
+  0
+ ],
+ "66": [
+  "mp_m_freemode_01_p_mp_m_executive_01",
   1
  ],
  "67": [
@@ -331,6 +379,42 @@
   "mp_m_freemode_01_p_mp_m_importexport_01",
   6
  ],
+ "103": [
+  "mp_m_freemode_01_p_mp_m_gunrunning_01",
+  0
+ ],
+ "104": [
+  "mp_m_freemode_01_p_mp_m_gunrunning_01",
+  1
+ ],
+ "105": [
+  "mp_m_freemode_01_p_mp_m_gunrunning_01",
+  2
+ ],
+ "106": [
+  "mp_m_freemode_01_p_mp_m_gunrunning_01",
+  3
+ ],
+ "107": [
+  "mp_m_freemode_01_p_mp_m_gunrunning_01",
+  4
+ ],
+ "108": [
+  "mp_m_freemode_01_p_mp_m_gunrunning_01",
+  5
+ ],
+ "109": [
+  "mp_m_freemode_01_p_mp_m_gunrunning_01",
+  6
+ ],
+ "110": [
+  "mp_m_freemode_01_p_mp_m_gunrunning_01",
+  7
+ ],
+ "111": [
+  "mp_m_freemode_01_p_mp_m_airraces_01",
+  0
+ ],
  "112": [
   "mp_m_freemode_01_p_mp_m_smuggler_01",
   0
@@ -366,6 +450,62 @@
  "120": [
   "mp_m_freemode_01_p_mp_m_smuggler_01",
   8
+ ],
+ "121": [
+  "mp_m_freemode_01_p_mp_m_christmas2017",
+  0
+ ],
+ "122": [
+  "mp_m_freemode_01_p_mp_m_christmas2017",
+  1
+ ],
+ "123": [
+  "mp_m_freemode_01_p_mp_m_christmas2017",
+  2
+ ],
+ "124": [
+  "mp_m_freemode_01_p_mp_m_christmas2017",
+  3
+ ],
+ "125": [
+  "mp_m_freemode_01_p_mp_m_christmas2017",
+  4
+ ],
+ "126": [
+  "mp_m_freemode_01_p_mp_m_christmas2017",
+  5
+ ],
+ "127": [
+  "mp_m_freemode_01_p_mp_m_battle",
+  0
+ ],
+ "128": [
+  "mp_m_freemode_01_p_mp_m_battle",
+  1
+ ],
+ "129": [
+  "mp_m_freemode_01_p_mp_m_christmas2018",
+  0
+ ],
+ "130": [
+  "mp_m_freemode_01_p_mp_m_christmas2018",
+  1
+ ],
+ "131": [
+  "mp_m_freemode_01_p_mp_m_christmas2018",
+  2
+ ],
+ "132": [
+  "mp_m_freemode_01_p_mp_m_christmas2018",
+  3
+ ],
+ "133": [
+  "mp_m_freemode_01_p_mp_m_christmas2018",
+  4
+ ],
+ "134": [
+  "mp_m_freemode_01_p_mp_m_christmas2018",
+  5
  ],
  "135": [
   "mp_m_freemode_01_p_mp_m_vinewood",
@@ -422,6 +562,102 @@
  "148": [
   "mp_m_freemode_01_p_mp_m_heist3",
   11
+ ],
+ "149": [
+  "mp_m_freemode_01_p_mp_m_sum",
+  0
+ ],
+ "150": [
+  "mp_m_freemode_01_p_mp_m_heist4",
+  0
+ ],
+ "151": [
+  "mp_m_freemode_01_p_mp_m_heist4",
+  1
+ ],
+ "152": [
+  "mp_m_freemode_01_p_mp_m_heist4",
+  2
+ ],
+ "153": [
+  "mp_m_freemode_01_p_mp_m_tuner",
+  0
+ ],
+ "154": [
+  "mp_m_freemode_01_p_mp_m_tuner",
+  1
+ ],
+ "155": [
+  "mp_m_freemode_01_p_mp_m_tuner",
+  2
+ ],
+ "156": [
+  "mp_m_freemode_01_p_mp_m_security",
+  0
+ ],
+ "157": [
+  "mp_m_freemode_01_p_mp_m_security",
+  1
+ ],
+ "158": [
+  "mp_m_freemode_01_p_mp_m_security",
+  2
+ ],
+ "159": [
+  "mp_m_freemode_01_p_mp_m_security",
+  3
+ ],
+ "160": [
+  "mp_m_freemode_01_p_mp_m_security",
+  4
+ ],
+ "161": [
+  "mp_m_freemode_01_p_mp_m_security",
+  5
+ ],
+ "162": [
+  "mp_m_freemode_01_p_mp_m_security",
+  6
+ ],
+ "163": [
+  "mp_m_freemode_01_p_mp_m_security",
+  7
+ ],
+ "164": [
+  "mp_m_freemode_01_p_mp_m_sum2",
+  0
+ ],
+ "165": [
+  "mp_m_freemode_01_p_mp_m_sum2",
+  1
+ ],
+ "166": [
+  "mp_m_freemode_01_p_mp_m_sum2",
+  2
+ ],
+ "167": [
+  "mp_m_freemode_01_p_mp_m_sum2",
+  3
+ ],
+ "168": [
+  "mp_m_freemode_01_p_mp_m_sum2",
+  4
+ ],
+ "169": [
+  "mp_m_freemode_01_p_mp_m_sum2",
+  5
+ ],
+ "170": [
+  "mp_m_freemode_01_p_mp_m_sum2",
+  6
+ ],
+ "171": [
+  "mp_m_freemode_01_p_mp_m_sum2",
+  7
+ ],
+ "172": [
+  "mp_m_freemode_01_p_mp_m_sum2",
+  8
  ],
  "173": [
   "mp_m_freemode_01_p_mp_m_christmas3",
@@ -512,12 +748,80 @@
   7
  ],
  "195": [
-  "mp_m_freemode_01_p_mp_m_2023_01",
-  8
+  "mp_m_freemode_01_p_mp_m_2023_02",
+  0
  ],
  "196": [
-  "mp_m_freemode_01_p_mp_m_2023_01",
+  "mp_m_freemode_01_p_mp_m_2023_02",
+  1
+ ],
+ "197": [
+  "mp_m_freemode_01_p_mp_m_2023_02",
+  2
+ ],
+ "198": [
+  "mp_m_freemode_01_p_mp_m_2023_02",
+  3
+ ],
+ "199": [
+  "mp_m_freemode_01_p_mp_m_2023_02",
+  4
+ ],
+ "200": [
+  "mp_m_freemode_01_p_mp_m_2023_02",
+  5
+ ],
+ "201": [
+  "mp_m_freemode_01_p_mp_m_2023_02",
+  6
+ ],
+ "202": [
+  "mp_m_freemode_01_p_mp_m_2023_02",
+  7
+ ],
+ "203": [
+  "mp_m_freemode_01_p_mp_m_2023_02",
+  8
+ ],
+ "204": [
+  "mp_m_freemode_01_p_mp_m_2023_02",
   9
+ ],
+ "205": [
+  "mp_m_freemode_01_p_mp_m_2023_02",
+  10
+ ],
+ "206": [
+  "mp_m_freemode_01_p_mp_m_2023_02",
+  11
+ ],
+ "207": [
+  "mp_m_freemode_01_p_mp_m_2023_02",
+  12
+ ],
+ "208": [
+  "mp_m_freemode_01_p_mp_m_2023_02",
+  13
+ ],
+ "209": [
+  "mp_m_freemode_01_p_mp_m_2023_02",
+  14
+ ],
+ "210": [
+  "mp_m_freemode_01_p_mp_m_2023_02",
+  15
+ ],
+ "211": [
+  "mp_m_freemode_01_p_mp_m_2023_02",
+  16
+ ],
+ "212": [
+  "mp_m_freemode_01_p_mp_m_2023_02",
+  17
+ ],
+ "213": [
+  "mp_m_freemode_01_p_mp_m_2023_02",
+  18
  ],
  "214": [
   "mp_m_freemode_01_p_mp_m_2024_01",

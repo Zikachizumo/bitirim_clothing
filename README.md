@@ -109,6 +109,17 @@ Tile görselleri iki kaynaktan geliyor:
 NUI ikisini yükleme anında ayırt ediyor: görselin eni boyuna eşitse (kare)
 render'dır ve yatay kaydırma uygulanmaz.
 
+### Parça adları
+
+Tile'lar artık "Ust Giysi" değil parçanın **gerçek adını** gösteriyor.
+Kaynak GTA'nın kendi mağaza verisi (`shop.meta > textLabel`), 848 GXT anahtarı
+[data/labels.lua](data/labels.lua) içinde; oyunda `GetLabelText` ile çözülüyor.
+Çözülemeyenler kategori adına düşer, yani hiçbir tile adsız kalmaz.
+`/kiyafetadlar` kaç anahtarın çözülebildiğini yazar.
+
+Rockstar fiyatları da çıkarıldı ama **kullanılmıyor**: kayıtların %80'inde
+`cost` alanı 0.
+
 **DİKKAT:** `/kiyafetcek ... yenile` var olan PNG'lerin üzerine yazar, yani
 render'ları oyun içi kareyle değiştirir. Argümansız `/kiyafetcek` var olanı
 atladığı için güvenlidir.

@@ -33,7 +33,42 @@ Denenip **başarısız** olan yollar — tekrar denenmesin diye:
 
 Sayılar tutsa bile yeterli olmazdı: "toplam eşit" ≠ "157 numara şu dosya".
 
-## Çalışan yöntem: doku sayısı parmak izi
+## ASIL KAYNAK: GTA'nın kendi mağaza verisi
+
+`mp_m_freemode_01_<dlc>_shop.meta` — GTA Online'ın kıyafetçi menüsünün
+kaynağı. Erkek için **44 dosya, 16.471 kayıt**. Her kayıtta:
+
+| alan | ne verir |
+|---|---|
+| `uniqueNameHash` | `DLC_MP_BIKER_M_JBIB_21_0`; joaat'ı = oyunun bildirdiği apparel hash'i |
+| `localDrawableIndex` / `localPropIndex` | DLC içindeki dosya numarası |
+| `textureIndex` | doku varyantı |
+| `eCompType` / `eAnchorPoint` | bileşen veya prop slot'u |
+| `textLabel` | parçanın gerçek adı (GXT anahtarı) |
+| `cost` | Rockstar fiyatı — **%80'i 0, kullanışsız** |
+| `forcedComponents` | kol uyumluluğu |
+
+Yani "mağazadaki 157 numara hangi dosya" sorusunun cevabı burada **yazıyor**.
+Çıkarım yok. `shopmeta.py` ayrıştırır, `crosscheck.py` eşlemeyi kurar.
+
+İki tuzak (ölçüldü):
+- `<Item>` etiketleri **iç içe** (`restrictionTags` içinde de var). Basit
+  `<Item>(.*?)</Item>` non-greedy regex ilk kapanışta kesiyor ve
+  `localDrawableIndex` kayboluyor: 16.471 yerine ~50 kayıt çıkıyordu.
+  Derinlik sayarak ayırmak gerekiyor.
+- **Prop'lar farklı alan adı kullanıyor**: bileşenler `localDrawableIndex`,
+  prop'lar `localPropIndex`. Sadece ilkine bakmak şapka/gözlük eşlemesini
+  sıfır bırakıyordu.
+
+## Doğrulama: iki bağımsız yöntem
+
+Parmak izi yöntemi (aşağıda) çıkarımdır, shop.meta doğrudan veridir. Çakıştıkları
+**1133 parçanın 1131'inde ikisi aynı şeyi söylüyor**. 2 çelişki çıktı (şapka
+195–196) ve orada shop.meta doğru kabul edildi — çıkarım değil, tablo.
+
+Bu karşılaştırmanın kendisi değerli: sessiz kalacak bir hatayı yakaladı.
+
+## Yedek yöntem: doku sayısı parmak izi
 
 Oyun her drawable için bir doku sayısı bildiriyor (1..26 arası, epey değişken).
 Aynı sayılar dosyalardan da çıkarılabiliyor. İki dizi hizalanıyor.
@@ -54,13 +89,17 @@ birebir aynı giysi**. Zincir uçtan uca kanıtlandı.
 
 | kategori | eşleşen | toplam | oran |
 |---|---|---|---|
-| pantolon | 181 | 202 | %89.6 |
-| üst giysi | 478 | 544 | %87.9 |
-| ayakkabı | 132 | 151 | %87.4 |
-| tişört | 181 | 213 | %85.0 |
-| kol (uppr) | 165 | 214 | %77.1 |
-| gözlük | 37 | 59 | %62.7 |
-| şapka | 136 | 221 | %61.5 |
+| üst giysi | 544 | 544 | **%100** |
+| pantolon | 202 | 202 | **%100** |
+| tişört | 213 | 213 | **%100** |
+| gözlük | 58 | 59 | %98.3 |
+| ayakkabı | 148 | 151 | %98.0 |
+| şapka | 213 | 221 | %96.4 |
+| kol (uppr) | 198 | 214 | %92.5 |
+
+Sunucuda **1246 render + 144 oyun karesi**. Render edilemeyen 109 parça
+4 DLC'den (tuner, battle, heist4, security): shop.meta onları listeliyor ama
+model dosyaları bu oyun sürümünde bulunamıyor.
 
 Eşlenen 1155 parçanın **1149'u render edildi** (%99.5). Kalan 6'sı `A8`
 doku formatında — BC1/BC3 dışı, desteklenmiyor.

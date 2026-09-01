@@ -41,6 +41,7 @@ shared_scripts {
 client_scripts {
     'client/init.lua',
     'client/apply.lua',
+    'client/labels.lua',
     'client/compat.lua',
     'client/catalog.lua',
     'client/preview.lua',

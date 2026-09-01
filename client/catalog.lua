@@ -115,6 +115,14 @@ function Catalog.get(ped, category)
         result = kept
     end
 
+    --[[
+        Parcanin GERCEK adini ekle (GTA'nin magaza verisinden, bkz.
+        client/labels.lua). Cozulemeyenler nil kalir ve NUI kategori adina
+        duser -- yani hicbir tile adsiz gorunmez.
+    ]]
+    local Labels = BitirimClothing.Labels
+    if Labels then Labels.decorate(category.slot, result) end
+
     cache[gender][category.key] = result
     return result
 end

@@ -129,8 +129,15 @@
             // mekanizma da kaldirildi.
             // Gorsel eksik kalirsa numara ile fallback.
             const src = `images/${S.category.slot || S.category.key}_${entry.d}.png`;
+            //  Parca numarasi (drawable indeksi) her tile'in kosesinde duruyor.
+            //  Bir parcayi konusabilmek icin tek gereken sey bu numara:
+            //  "outerwear 478" gibi. Numara oyunun kendi indeksi, kategoriye
+            //  ozel -- yani ayni numara farkli kategoride baska parcadir.
             tile.innerHTML =
-                `<div class="thumb"><img src="${src}" alt="" onerror="this.replaceWith(document.createTextNode('${entry.d}'))"></div>` +
+                `<div class="thumb">` +
+                    `<img src="${src}" alt="" onerror="this.replaceWith(document.createTextNode('${entry.d}'))">` +
+                    `<span class="num">${entry.d}</span>` +
+                `</div>` +
                 `<div class="cap"><span class="caret">&#9662;</span>${entry.name || S.category.itemLabel || S.category.label}</div>`;
 
             tile.addEventListener('click', () => selectTile(entry, tile));
@@ -186,7 +193,11 @@
         $('qty').textContent = '1';
         $('item-name').textContent =
             (S.entry && S.entry.name) || S.category.itemLabel || S.category.label;
-        $('item-crumb-text').textContent = 'CLOTHING / ' + (S.gender === 'female' ? 'WOMENS' : 'MENS');
+        //  Kategori adi + parca numarasi: bir parcayi tarif etmek icin yeterli
+        //  ("outerwear 478"). Tile kosesindeki numarayla ayni sey.
+        $('item-crumb-text').textContent =
+            'CLOTHING / ' + (S.gender === 'female' ? 'WOMENS' : 'MENS') +
+            ' / ' + S.category.key.toUpperCase() + ' ' + S.drawable;
         $('item-price').textContent = S.currency + ' ' + fmt(S.category.price);
         $('item-card').classList.remove('hidden');
     }

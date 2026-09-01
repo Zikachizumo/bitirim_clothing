@@ -152,7 +152,7 @@ spor ayakkabı) birebir tuttu.
 
 ### Boş yer tutucular (6 parça, katalogdan çıkarıldı)
 
-`data/empty.lua`. Bunlar oyunun listesinde görünen ama giyilince ekranda
+`data/removed.lua` (`'bos'` sebebiyle). Bunlar oyunun listesinde görünen ama giyilince ekranda
 hiçbir şey göstermeyen parçalar. İki bağımsız ölçüm:
 
 - tek dokuları **4x4 `A8`** yer tutucu (gerçek parçalar 512x512 BC1/BC3)

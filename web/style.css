@@ -184,6 +184,30 @@ html, body {
     padding: 6px;
 }
 
+/*  Parca numarasi. Bir parcayi tarif etmenin tek kesin yolu bu numara
+    (oyunun drawable indeksi), o yuzden her tile'da gorunur duruyor.
+    Gorseli kapatmasin diye kose rozeti; secilince belirginlesiyor. */
+.tile .thumb .num {
+    position: absolute;
+    top: 3px;
+    left: 4px;
+    padding: 1px 4px;
+    border-radius: 4px;
+    background: rgba(0, 0, 0, 0.55);
+    font-size: 9px;
+    font-weight: 600;
+    line-height: 1.35;
+    font-variant-numeric: tabular-nums;
+    color: rgba(255, 255, 255, 0.62);
+    pointer-events: none;
+}
+
+.tile:hover .thumb .num,
+.tile.selected .thumb .num {
+    background: rgba(0, 0, 0, 0.72);
+    color: var(--text);
+}
+
 .tile .cap {
     display: flex;
     align-items: center;

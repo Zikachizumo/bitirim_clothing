@@ -36,26 +36,26 @@ local function isBaseState(componentId, drawable)
 end
 
 --[[
-    BOS YER TUTUCULAR DA KATALOGA GIRMEZ.
+    CIKARILAN PARCALAR DA KATALOGA GIRMEZ.
 
-    Oyunun listesinde olan ama giyilince ekranda hicbir sey gostermeyen
-    parcalar (bkz. data/empty.lua -- 4x4 A8 yer tutucu doku + bos oyun ici
-    kare ile dogrulandi). Satin alinacak bir sey degiller.
+    Iki tur: giyilince hicbir sey gostermeyen bos yer tutucular ve oyun icinde
+    gorsel olarak bozuk oldugu icin elle cikarilanlar. Liste ve sebepleri
+    data/removed.lua'da.
 ]]
-local emptyItems = {}
+local removedItems = {}
 do
-    local ok, data = pcall(lib.load, 'data.empty')
+    local ok, data = pcall(lib.load, 'data.removed')
     if ok and type(data) == 'table' then
-        emptyItems = data
+        removedItems = data
     else
-        print('^3[bitirim_clothing] data/empty.lua yuklenemedi -- bos parcalar katalogda kalacak.^7')
+        print('^3[bitirim_clothing] data/removed.lua yuklenemedi -- cikarilan parcalar katalogda kalacak.^7')
     end
 end
 
-local function isEmpty(gender, categoryKey, drawable)
-    local g = emptyItems[gender]
+local function isRemoved(gender, categoryKey, drawable)
+    local g = removedItems[gender]
     local c = g and g[categoryKey]
-    return c ~= nil and c[drawable] == true
+    return c ~= nil and c[drawable] ~= nil
 end
 
 local function scanComponent(ped, componentId)
@@ -130,7 +130,7 @@ function Catalog.get(ped, category)
     local Hidden = BitirimClothing.Hidden
     local kept = {}
     for _, entry in ipairs(result) do
-        local drop = isEmpty(gender, category.key, entry.d)
+        local drop = isRemoved(gender, category.key, entry.d)
                   or (Hidden ~= nil and Hidden.is(gender, category.key, entry.d))
         if not drop then
             kept[#kept + 1] = entry

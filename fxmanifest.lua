@@ -49,6 +49,7 @@ client_scripts {
     'client/hidden.lua',
     'client/probe.lua',
     'client/capture.lua',
+    'client/dump.lua',
 }
 
 server_scripts {

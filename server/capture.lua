@@ -118,6 +118,34 @@ lib.callback.register('bitirim_clothing:captureThumb', function(source, name, ma
     return ok, err
 end)
 
+--[[
+    Katalog dokumunu diske yaz (bkz. client/dump.lua).
+    Icerik client'tan geliyor ama sadece ACE yetkili biri cagirabiliyor ve
+    dosya adi cinsiyetle sinirli -- serbest yol adi kabul edilmiyor.
+]]
+lib.callback.register('bitirim_clothing:saveDump', function(source, gender, payload)
+    if not IsPlayerAceAllowed(source, 'bitirim_clothing.dev') then
+        return false, 'yetki yok'
+    end
+    if gender ~= 'male' and gender ~= 'female' then
+        return false, 'gecersiz cinsiyet'
+    end
+    if type(payload) ~= 'string' or #payload < 32 then
+        return false, 'bos veri'
+    end
+
+    local path = ('web/dump/%s.json'):format(gender)
+    SaveResourceFile(RESOURCE, path, payload, #payload)
+
+    -- Donus degerine guvenmiyoruz (bkz. yukaridaki not), geri okuyoruz.
+    local check = LoadResourceFile(RESOURCE, path)
+    if check and #check == #payload then
+        print(('[bitirim_clothing] katalog dokumu yazildi: %s (%d bayt)'):format(path, #payload))
+        return true
+    end
+    return false, 'diske yazilamadi'
+end)
+
 --- Bir thumbnail zaten var mi? (Client diski goremez, server bakar.)
 lib.callback.register('bitirim_clothing:thumbExists', function(_, name)
     if type(name) ~= 'string' or not name:match('^[a-z0-9_]+$') then return false end

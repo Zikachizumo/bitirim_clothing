@@ -46,6 +46,7 @@ client_scripts {
     'client/preview.lua',
     'client/shop.lua',
     'client/coverage.lua',
+    'client/probe.lua',
 }
 
 server_scripts {

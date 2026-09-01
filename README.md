@@ -94,6 +94,25 @@ kaplıyordu (hedef ~%55) ve dikey merkezi %49.3'teydi. İki sonuç:
 `zoom` FOV'a çevrilirken oyunun varsayılan FOV'u `GetCamFov` ile **çalışırken
 okunuyor**, sabit varsayılmıyor.
 
+### Tile'da yatay ortalama (ölçüldü, yeniden çekim gerekmedi)
+
+Üretilen karelerde ped yatayda ortada değil — üstelik çerçevelemeye göre farklı
+yerde. 1390 karenin üzerinden ölçüldü:
+
+| çerçeveleme | pedin karedeki yeri | kaynak |
+|---|---|---|
+| head / torso | %42.8 | kırmızı fedora, yeşil bere, beyaz takım — üçü de aynı |
+| feet | %56.6 | shoes_10 / _40 / _70 — üçü de aynı |
+| legs | ölçülemedi | koyu pantolon testi arka plana karıştı; head/torso değeri kullanılıyor |
+
+Düzeltme NUI tarafında yapıldı, yani **1390 kare yeniden çekilmeden** düzeldi.
+`object-position` kullanılmadı: thumb kutusunun en/boyu sabit değil (ölçüldü:
+69x55, pencere genişliğine göre değişiyor) ve o yüzdenin anlamı kutu oranına
+bağlı. Bunun yerine kaydırma **görüntünün kendi genişliğinin** yüzdesi olarak
+veriliyor (`--nudge`), kutu oranı ne olursa olsun aynı sonucu verir.
+
+Tarayıcıda doğrulandı: pedin karedeki noktası kutunun tam %50.0'ında.
+
 ### Çekim sırasında sahne kilitli
 
 Bir tur, çekim sürerken `/kiyafetkamera kapat` yazıldığı için bozuldu: kamera

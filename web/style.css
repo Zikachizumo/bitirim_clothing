@@ -157,6 +157,8 @@ html, body {
 
 .tile .thumb {
     flex: 1;
+    position: relative;
+    overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -165,10 +167,42 @@ html, body {
     color: var(--text-faint);
 }
 
-/* Kareler 16:9 oyun ekranindan geliyor, tile ise kare. `cover` yanlardan
-   kirpar ve dikeyi tam tutar -- parca buyuk gorunur. `contain` letterbox
-   yapip parcayi kuculturdu. */
-.tile .thumb img { width: 100%; height: 100%; object-fit: cover; object-position: center; }
+/*  Kareler oyun ekranindan geliyor (512x280 = 1.83 en/boy), tile kutusu ise
+    daha dar. Goruntu YUKSEKLIGE gore olceklenip yanlardan tasiyor (cover
+    davranisi); `contain` letterbox yapip parcayi kuculturdu.
+
+    OLCULDU (2026-09-01): ped karede yatayda ORTADA DEGIL, ustelik cerceveleme
+    basina farkli yerde. Uretilen kareler uzerinden olculdu:
+      head / torso -> ped karenin %42.8'inde
+                      (kirmizi fedora, yesil bere, beyaz takim -- ucu de ayni)
+      feet         -> ped karenin %56.6'sinda
+                      (shoes_10 / _40 / _70 -- ucu de ayni)
+    legs icin guvenilir olcum YOK; koyu pantolon testi arka plana karisti.
+    head/torso degeri kullaniliyor, gorsel olarak dogru duruyor ama olculmedi.
+
+    NEDEN object-position DEGIL: thumb kutusunun en/boyu sabit degil (tile
+    `aspect-ratio` + sabit yukseklikli alt yazi => goruntu genisligine gore
+    degisiyor, olculdu: 69x55). object-position yuzdesi kutu oranina bagli
+    oldugu icin pencere boyu degisince ortalama kayardi. Bunun yerine kaydirma
+    GORUNTUNUN KENDI genisliginin yuzdesi olarak veriliyor -- kutu orani ne
+    olursa olsun ayni sonucu verir.
+
+    nudge = (0.5 - pedin bulundugu oran) * 100
+*/
+.tile .thumb img {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    height: 100%;
+    width: auto;
+    max-width: none;
+    transform: translateX(-50%) translateX(var(--nudge, 0%));
+}
+
+.tile .thumb.fit-head  img,
+.tile .thumb.fit-torso img,
+.tile .thumb.fit-legs  img { --nudge:  7.2%; }
+.tile .thumb.fit-feet  img { --nudge: -6.6%; }
 
 .tile .cap {
     display: flex;

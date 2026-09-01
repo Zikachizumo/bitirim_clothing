@@ -88,8 +88,21 @@ lib.callback.register('bitirim_clothing:captureThumb', function(source, name, ma
                 return
             end
 
-            local saved = SaveResourceFile(RESOURCE, ('web/images/%s.png'):format(name), binary, #binary)
-            ok, err, done = saved == true, saved and nil or 'SaveResourceFile basarisiz', true
+            local path = ('web/images/%s.png'):format(name)
+            SaveResourceFile(RESOURCE, path, binary, #binary)
+
+            --[[
+                SaveResourceFile'in DONUS DEGERINE GUVENMIYORUZ.
+                Olculdu (2026-09-01): 221 thumbnail diske sorunsuz yazildi ama
+                cagri `true` donmedi ve hepsi "basarisiz" raporlandi. Tek
+                guvenilir kanit dosyayi geri okumak.
+            ]]
+            local check = LoadResourceFile(RESOURCE, path)
+            if check and #check == #binary then
+                ok, err, done = true, nil, true
+            else
+                ok, err, done = false, 'diske yazilamadi', true
+            end
         end, 'base64')
     end)
 

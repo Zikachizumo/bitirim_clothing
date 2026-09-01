@@ -41,7 +41,8 @@ bağlı kalmasınlar diye repoya işlendi.
 
 - Kalan 48 boşluk parçasının `/kiyafetbosluk` ile gözden geçirilmesi
 - Kadın `DefaultArms` ve kadın kol blacklist'i hiç ölçülmedi
-- Thumbnail üretimi — araç hazır (`/kiyafetcek`), henüz çalıştırılmadı
+- Thumbnail üretimi — çalışıyor. İlk tur (221 şapka) üretildi; kamera
+  çerçevelemesi ölçülüp düzeltildikten sonra `yenile` ile tekrarlanmalı
 - Kamera çerçeveleme değerlerinin oyunda ölçülmesi (`/kiyafetkamera`)
 
 ## Komutlar
@@ -54,7 +55,9 @@ bağlı kalmasınlar diye repoya işlendi.
 | `/kiyafetbosluk` | Kol verisi olmayan üstleri tek tek giyip gözden geçirir; bozuk olanı katalogdan çıkarır. |
 | `/kiyafetgizli` | Gizlenen parçaları listeler. |
 | `/kiyafetcek [kategori] [başlangıç]` | Grid için thumbnail PNG'lerini toplu üretir. Kategori verilmezse hepsi. |
+| `/kiyafetcek ... yenile` | Var olan PNG'leri de yeniden çeker (çerçeveleme değişince gerekir). |
 | `/kiyafetcekdur` | Üretimi durdurur. |
+| `/kiyafetnokta` | Bulunduğun noktayı `Config.CaptureCoords` formatında yazar. |
 | `/kiyafetkamera <head\|torso\|legs\|feet> <z> <mesafe> [pitch]` | Önizleme kamerasını canlı ayarlar. Beğenilen değerler `client/preview.lua` içine geçirilir. |
 
 İlk ikisi `bitirim_clothing.dev` ACE yetkisi ister. Yetki **server'da** sorulur —
@@ -75,6 +78,21 @@ txAdmin live console'dan canlı `add_ace ...` çalıştır veya tam restart yap.
 3. ACE yetkisini ver (yukarıdaki satır).
 4. `refresh` sonra `restart bitirim_clothing` — **bu sıra zorunlu**, tek başına
    restart eski paketlenmiş cache'i kullanabiliyor.
+
+### Kamera çerçevelemesi ölçüldü (2026-09-01)
+
+İlk thumbnail turundan bir PNG piksel piksel ölçüldü: kafa karenin **%24.3**'ünü
+kaplıyordu (hedef ~%55) ve dikey merkezi %49.3'teydi. İki sonuç:
+
+- `z = 0.68` kafayı tam ortalıyor → `GetEntityCoords(ped)` bu ped için **ayak
+  değil, pelvis hizası** döndürüyor. Eski `legs`/`feet` değerleri "taban = ayak"
+  varsayımıyla yazılmıştı; `feet = taban+0.02` aslında kalça hizasıydı, yani
+  **ayakkabı kareye hiç girmiyordu**. Değerler pelvis ankoruna göre yenilendi.
+- Kare 2.25× fazla genişti. Mesafeyi kısaltmak yerine FOV daraltılıyor
+  (`zoom` alanı) — 0.38 m mesafede perspektif bozulurdu.
+
+`zoom` FOV'a çevrilirken oyunun varsayılan FOV'u `GetCamFov` ile **çalışırken
+okunuyor**, sabit varsayılmıyor.
 
 Thumbnail üretimi için `/kiyafetcek` (bkz. Komutlar). Dosya yoksa NUI tile'da drawable
 numarasını gösterir, kırılmaz.

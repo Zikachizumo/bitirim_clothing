@@ -1,2 +1,6 @@
 node_modules/
 *.log
+
+# Thumbnail'lar sunucuda uretiliyor (binlerce PNG, ~70KB her biri).
+# Git'e girmezler; kaybolurlarsa /kiyafetcek yeniden uretir.
+web/images/*.png

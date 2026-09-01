@@ -165,7 +165,10 @@ html, body {
     color: var(--text-faint);
 }
 
-.tile .thumb img { width: 100%; height: 100%; object-fit: contain; }
+/* Kareler 16:9 oyun ekranindan geliyor, tile ise kare. `cover` yanlardan
+   kirpar ve dikeyi tam tutar -- parca buyuk gorunur. `contain` letterbox
+   yapip parcayi kuculturdu. */
+.tile .thumb img { width: 100%; height: 100%; object-fit: cover; object-position: center; }
 
 .tile .cap {
     display: flex;

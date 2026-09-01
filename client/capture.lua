@@ -10,7 +10,9 @@
 
     Komutlar:
       /kiyafetcek [kategori] [baslangic]   uretimi baslat
+      /kiyafetcek ... yenile               var olanlari da yeniden cek
       /kiyafetcekdur                       durdur
+      /kiyafetnokta                        bulundugun yerin koordinatini yaz
 
     Kategori verilmezse HEPSI sirayla uretilir. `baslangic` yarida kalan isi
     kaldigi yerden surdurmek icin (drawable indeksi).
@@ -26,6 +28,13 @@ local Catalog   = BitirimClothing.Catalog
 local Preview   = BitirimClothing.Preview
 
 local TOP = Constants.Component.TOP
+
+--[[
+    Kare oyun ekranindan geliyor, yani 16:9. 512 -> 512x280 civari.
+    NUI tile'i kare oldugu icin CSS `object-fit: cover` yanlardan kirpiyor;
+    dikey cozunurluk tam korunuyor.
+]]
+local THUMB_SIZE = 512
 
 local job = { running = false, cancel = false }
 
@@ -54,7 +63,7 @@ local function cleanScreen(on)
     end
 end
 
-local function captureCategory(ped, category, startAt)
+local function captureCategory(ped, category, startAt, force)
     local list = Catalog.get(ped, category)
     if #list == 0 then
         print(('^3[cek] %s: katalog bos, atlandi^7'):format(category.key))
@@ -71,7 +80,7 @@ local function captureCategory(ped, category, startAt)
         if entry.d >= (startAt or 0) then
             local name = ('%s_%d'):format(category.slot, entry.d)
 
-            local exists = lib.callback.await('bitirim_clothing:thumbExists', false, name)
+            local exists = not force and lib.callback.await('bitirim_clothing:thumbExists', false, name)
             if exists then
                 skipped = skipped + 1
             else
@@ -80,7 +89,7 @@ local function captureCategory(ped, category, startAt)
                     -- Ped'in yeni parcayi cizmesi icin birkac kare bekle.
                     Wait(160)
 
-                    local ok, err = lib.callback.await('bitirim_clothing:captureThumb', false, name, 256)
+                    local ok, err = lib.callback.await('bitirim_clothing:captureThumb', false, name, THUMB_SIZE)
                     if ok then
                         written = written + 1
                     else
@@ -113,8 +122,15 @@ RegisterCommand('kiyafetcek', function(_, args)
         return
     end
 
-    local only    = args[1]
-    local startAt = tonumber(args[2]) or 0
+    -- 'yenile' argumani var olan PNG'leri de yeniden cektirir (cerceveleme
+    -- degistiginde eski kareler yeni olanlarla uyumsuz kaliyor).
+    local force, rest = false, {}
+    for _, a in ipairs(args) do
+        if a == 'yenile' then force = true else rest[#rest + 1] = a end
+    end
+
+    local only    = rest[1]
+    local startAt = tonumber(rest[2]) or 0
 
     local targets = {}
     if only then
@@ -135,7 +151,10 @@ RegisterCommand('kiyafetcek', function(_, args)
         local snapshot = Apply.snapshot(ped)
 
         -- Sabit onizleme noktasina gec (kamera cerceveleri buna dayaniyor).
-        local p = Config.Store.previewCoords
+        -- Config.CaptureCoords tanimliysa cekim ORASI'da yapilir. Arka planin
+        -- daha sade oldugu bir nokta bulunursa /kiyafetnokta ile olcup buraya
+        -- yazilabilir; tanimsizsa magazanin onizleme noktasi kullanilir.
+        local p = Config.CaptureCoords or Config.Store.previewCoords
         local back = GetEntityCoords(ped)
         SetEntityCoords(ped, p.x, p.y, p.z, false, false, false, false)
         SetEntityHeading(ped, p.w)
@@ -152,7 +171,7 @@ RegisterCommand('kiyafetcek', function(_, args)
 
         for _, category in ipairs(targets) do
             if job.cancel then break end
-            local w, s = captureCategory(ped, category, startAt)
+            local w, s = captureCategory(ped, category, startAt, force)
             totalW, totalS = totalW + w, totalS + s
             print(('^2[cek] %s bitti: %d yazildi, %d zaten vardi^7'):format(category.key, w, s))
         end
@@ -169,6 +188,17 @@ RegisterCommand('kiyafetcek', function(_, args)
             print("^3Yeni dosyalarin NUI icinde gorunmesi icin: refresh + restart bitirim_clothing^7")
         end
     end)
+end, false)
+
+--[[
+    Bulunulan noktayi Config.CaptureCoords formatinda yazdirir.
+    Cekim icin daha sade arka planli bir yer secmek isteyince kullanilir.
+]]
+RegisterCommand('kiyafetnokta', function()
+    local ped = PlayerPedId()
+    local c = GetEntityCoords(ped)
+    print(('^2Config.CaptureCoords = vec4(%.2f, %.2f, %.2f, %.2f)^7')
+        :format(c.x, c.y, c.z, GetEntityHeading(ped)))
 end, false)
 
 RegisterCommand('kiyafetcekdur', function()

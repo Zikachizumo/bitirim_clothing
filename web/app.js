@@ -122,7 +122,7 @@
             // Thumbnail henuz uretilmemis olabilir -> numara ile fallback.
             const src = `images/${S.category.slot || S.category.key}_${entry.d}.png`;
             tile.innerHTML =
-                `<div class="thumb fit-${S.category.camera || 'torso'}"><img src="${src}" alt="" onerror="this.replaceWith(document.createTextNode('${entry.d}'))"></div>` +
+                `<div class="thumb fit-${S.category.camera || 'torso'}"><img src="${src}" alt="" onload="if(this.naturalWidth===this.naturalHeight)this.parentElement.classList.add('iso')" onerror="this.replaceWith(document.createTextNode('${entry.d}'))"></div>` +
                 `<div class="cap"><span class="caret">&#9662;</span>${S.category.itemLabel || S.category.label}</div>`;
 
             tile.addEventListener('click', () => selectTile(entry, tile));

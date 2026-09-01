@@ -1,0 +1,522 @@
+{
+ "0": [
+  "mp_m_freemode_01",
+  0
+ ],
+ "1": [
+  "mp_m_freemode_01",
+  1
+ ],
+ "2": [
+  "mp_m_freemode_01",
+  2
+ ],
+ "3": [
+  "mp_m_freemode_01",
+  3
+ ],
+ "4": [
+  "mp_m_freemode_01",
+  4
+ ],
+ "5": [
+  "mp_m_freemode_01",
+  5
+ ],
+ "6": [
+  "mp_m_freemode_01",
+  6
+ ],
+ "7": [
+  "mp_m_freemode_01",
+  7
+ ],
+ "8": [
+  "mp_m_freemode_01",
+  8
+ ],
+ "9": [
+  "mp_m_freemode_01",
+  9
+ ],
+ "10": [
+  "mp_m_freemode_01",
+  10
+ ],
+ "11": [
+  "mp_m_freemode_01",
+  11
+ ],
+ "12": [
+  "mp_m_freemode_01",
+  12
+ ],
+ "13": [
+  "mp_m_freemode_01",
+  13
+ ],
+ "14": [
+  "mp_m_freemode_01",
+  14
+ ],
+ "15": [
+  "mp_m_freemode_01",
+  15
+ ],
+ "25": [
+  "mp_m_freemode_01_male_heist",
+  0
+ ],
+ "26": [
+  "mp_m_freemode_01_male_heist",
+  1
+ ],
+ "27": [
+  "mp_m_freemode_01_male_heist",
+  2
+ ],
+ "28": [
+  "mp_m_freemode_01_mp_m_luxe_01",
+  0
+ ],
+ "29": [
+  "mp_m_freemode_01_mp_m_luxe_01",
+  1
+ ],
+ "30": [
+  "mp_m_freemode_01_mp_m_luxe_02",
+  0
+ ],
+ "31": [
+  "mp_m_freemode_01_mp_m_lowrider_01",
+  0
+ ],
+ "32": [
+  "mp_m_freemode_01_mp_m_lowrider_01",
+  1
+ ],
+ "33": [
+  "mp_m_freemode_01_male_apt01",
+  0
+ ],
+ "34": [
+  "mp_m_freemode_01_male_apt01",
+  1
+ ],
+ "35": [
+  "mp_m_freemode_01_male_apt01",
+  2
+ ],
+ "36": [
+  "mp_m_freemode_01_male_apt01",
+  3
+ ],
+ "37": [
+  "mp_m_freemode_01_male_apt01",
+  4
+ ],
+ "38": [
+  "mp_m_freemode_01_male_apt01",
+  5
+ ],
+ "41": [
+  "mp_m_freemode_01_mp_m_lowrider_02",
+  0
+ ],
+ "42": [
+  "mp_m_freemode_01_mp_m_lowrider_02",
+  1
+ ],
+ "43": [
+  "mp_m_freemode_01_mp_m_lowrider_02",
+  2
+ ],
+ "44": [
+  "mp_m_freemode_01_mp_m_executive_01",
+  0
+ ],
+ "45": [
+  "mp_m_freemode_01_mp_m_executive_01",
+  1
+ ],
+ "46": [
+  "mp_m_freemode_01_mp_m_stunt_01",
+  0
+ ],
+ "47": [
+  "mp_m_freemode_01_mp_m_stunt_01",
+  1
+ ],
+ "48": [
+  "mp_m_freemode_01_mp_m_stunt_01",
+  2
+ ],
+ "49": [
+  "mp_m_freemode_01_mp_m_stunt_01",
+  3
+ ],
+ "50": [
+  "mp_m_freemode_01_mp_m_bikerdlc_01",
+  0
+ ],
+ "51": [
+  "mp_m_freemode_01_mp_m_bikerdlc_01",
+  1
+ ],
+ "52": [
+  "mp_m_freemode_01_mp_m_bikerdlc_01",
+  2
+ ],
+ "53": [
+  "mp_m_freemode_01_mp_m_bikerdlc_01",
+  3
+ ],
+ "54": [
+  "mp_m_freemode_01_mp_m_bikerdlc_01",
+  4
+ ],
+ "55": [
+  "mp_m_freemode_01_mp_m_bikerdlc_01",
+  5
+ ],
+ "56": [
+  "mp_m_freemode_01_mp_m_bikerdlc_01",
+  6
+ ],
+ "57": [
+  "mp_m_freemode_01_mp_m_importexport_01",
+  0
+ ],
+ "58": [
+  "mp_m_freemode_01_mp_m_importexport_01",
+  1
+ ],
+ "59": [
+  "mp_m_freemode_01_mp_m_gunrunning_01",
+  0
+ ],
+ "60": [
+  "mp_m_freemode_01_mp_m_gunrunning_01",
+  1
+ ],
+ "61": [
+  "mp_m_freemode_01_mp_m_gunrunning_01",
+  2
+ ],
+ "62": [
+  "mp_m_freemode_01_mp_m_gunrunning_01",
+  3
+ ],
+ "63": [
+  "mp_m_freemode_01_mp_m_gunrunning_01",
+  4
+ ],
+ "64": [
+  "mp_m_freemode_01_mp_m_airraces_01",
+  0
+ ],
+ "65": [
+  "mp_m_freemode_01_mp_m_smuggler_01",
+  0
+ ],
+ "66": [
+  "mp_m_freemode_01_mp_m_smuggler_01",
+  1
+ ],
+ "67": [
+  "mp_m_freemode_01_mp_m_christmas2017",
+  0
+ ],
+ "68": [
+  "mp_m_freemode_01_mp_m_christmas2017",
+  1
+ ],
+ "69": [
+  "mp_m_freemode_01_mp_m_christmas2017",
+  2
+ ],
+ "70": [
+  "mp_m_freemode_01_mp_m_christmas2017",
+  3
+ ],
+ "71": [
+  "mp_m_freemode_01_mp_m_christmas2017",
+  4
+ ],
+ "72": [
+  "mp_m_freemode_01_mp_m_christmas2017",
+  5
+ ],
+ "73": [
+  "mp_m_freemode_01_mp_m_christmas2017",
+  6
+ ],
+ "77": [
+  "mp_m_freemode_01_mp_m_christmas2018",
+  0
+ ],
+ "78": [
+  "mp_m_freemode_01_mp_m_christmas2018",
+  1
+ ],
+ "79": [
+  "mp_m_freemode_01_mp_m_christmas2018",
+  2
+ ],
+ "80": [
+  "mp_m_freemode_01_mp_m_christmas2018",
+  3
+ ],
+ "81": [
+  "mp_m_freemode_01_mp_m_christmas2018",
+  4
+ ],
+ "82": [
+  "mp_m_freemode_01_mp_m_christmas2018",
+  5
+ ],
+ "83": [
+  "mp_m_freemode_01_mp_m_christmas2018",
+  6
+ ],
+ "84": [
+  "mp_m_freemode_01_mp_m_christmas2018",
+  7
+ ],
+ "85": [
+  "mp_m_freemode_01_mp_m_christmas2018",
+  8
+ ],
+ "86": [
+  "mp_m_freemode_01_mp_m_christmas2018",
+  9
+ ],
+ "87": [
+  "mp_m_freemode_01_mp_m_christmas2018",
+  10
+ ],
+ "88": [
+  "mp_m_freemode_01_mp_m_christmas2018",
+  11
+ ],
+ "89": [
+  "mp_m_freemode_01_mp_m_christmas2018",
+  12
+ ],
+ "90": [
+  "mp_m_freemode_01_mp_m_christmas2018",
+  13
+ ],
+ "91": [
+  "mp_m_freemode_01_mp_m_vinewood",
+  0
+ ],
+ "92": [
+  "mp_m_freemode_01_mp_m_vinewood",
+  1
+ ],
+ "93": [
+  "mp_m_freemode_01_mp_m_vinewood",
+  2
+ ],
+ "94": [
+  "mp_m_freemode_01_mp_m_vinewood",
+  3
+ ],
+ "102": [
+  "mp_m_freemode_01_mp_m_sum2",
+  0
+ ],
+ "103": [
+  "mp_m_freemode_01_mp_m_sum2",
+  1
+ ],
+ "104": [
+  "mp_m_freemode_01_mp_m_sum2",
+  2
+ ],
+ "105": [
+  "mp_m_freemode_01_mp_m_sum2",
+  3
+ ],
+ "106": [
+  "mp_m_freemode_01_mp_m_sum2",
+  4
+ ],
+ "107": [
+  "mp_m_freemode_01_mp_m_sum2",
+  5
+ ],
+ "108": [
+  "mp_m_freemode_01_mp_m_sum2",
+  6
+ ],
+ "109": [
+  "mp_m_freemode_01_mp_m_christmas3",
+  0
+ ],
+ "110": [
+  "mp_m_freemode_01_mp_m_christmas3",
+  1
+ ],
+ "111": [
+  "mp_m_freemode_01_mp_m_christmas3",
+  2
+ ],
+ "112": [
+  "mp_m_freemode_01_mp_m_christmas3",
+  3
+ ],
+ "113": [
+  "mp_m_freemode_01_mp_m_christmas3",
+  4
+ ],
+ "114": [
+  "mp_m_freemode_01_mp_m_christmas3",
+  5
+ ],
+ "115": [
+  "mp_m_freemode_01_mp_m_christmas3",
+  6
+ ],
+ "116": [
+  "mp_m_freemode_01_mp_m_christmas3",
+  7
+ ],
+ "117": [
+  "mp_m_freemode_01_mp_m_christmas3",
+  8
+ ],
+ "118": [
+  "mp_m_freemode_01_mp_m_christmas3",
+  9
+ ],
+ "119": [
+  "mp_m_freemode_01_mp_m_christmas3",
+  10
+ ],
+ "120": [
+  "mp_m_freemode_01_mp_m_christmas3",
+  11
+ ],
+ "121": [
+  "mp_m_freemode_01_mp_m_christmas3",
+  12
+ ],
+ "122": [
+  "mp_m_freemode_01_mp_m_christmas3",
+  13
+ ],
+ "123": [
+  "mp_m_freemode_01_mp_m_christmas3",
+  14
+ ],
+ "124": [
+  "mp_m_freemode_01_mp_m_christmas3",
+  15
+ ],
+ "125": [
+  "mp_m_freemode_01_mp_m_christmas3",
+  16
+ ],
+ "126": [
+  "mp_m_freemode_01_mp_m_2023_01",
+  0
+ ],
+ "127": [
+  "mp_m_freemode_01_mp_m_2023_01",
+  1
+ ],
+ "128": [
+  "mp_m_freemode_01_mp_m_2023_01",
+  2
+ ],
+ "129": [
+  "mp_m_freemode_01_mp_m_2023_01",
+  3
+ ],
+ "130": [
+  "mp_m_freemode_01_mp_m_2023_01",
+  4
+ ],
+ "131": [
+  "mp_m_freemode_01_mp_m_2023_01",
+  5
+ ],
+ "132": [
+  "mp_m_freemode_01_mp_m_2023_01",
+  6
+ ],
+ "133": [
+  "mp_m_freemode_01_mp_m_2023_01",
+  7
+ ],
+ "134": [
+  "mp_m_freemode_01_mp_m_2023_01",
+  8
+ ],
+ "135": [
+  "mp_m_freemode_01_mp_m_2023_02",
+  0
+ ],
+ "136": [
+  "mp_m_freemode_01_mp_m_2023_02",
+  1
+ ],
+ "137": [
+  "mp_m_freemode_01_mp_m_2023_02",
+  2
+ ],
+ "138": [
+  "mp_m_freemode_01_mp_m_2023_02",
+  3
+ ],
+ "139": [
+  "mp_m_freemode_01_mp_m_2023_02",
+  4
+ ],
+ "140": [
+  "mp_m_freemode_01_mp_m_2023_02",
+  5
+ ],
+ "141": [
+  "mp_m_freemode_01_mp_m_2023_02",
+  6
+ ],
+ "142": [
+  "mp_m_freemode_01_mp_m_2023_02",
+  7
+ ],
+ "143": [
+  "mp_m_freemode_01_mp_m_2023_02",
+  8
+ ],
+ "144": [
+  "mp_m_freemode_01_mp_m_2023_02",
+  9
+ ],
+ "145": [
+  "mp_m_freemode_01_mp_m_2024_01",
+  0
+ ],
+ "146": [
+  "mp_m_freemode_01_mp_m_2024_01",
+  1
+ ],
+ "147": [
+  "mp_m_freemode_01_mp_m_2024_01",
+  2
+ ],
+ "148": [
+  "mp_m_freemode_01_mp_m_2024_01",
+  3
+ ],
+ "149": [
+  "mp_m_freemode_01_mp_m_2024_01",
+  4
+ ],
+ "150": [
+  "mp_m_freemode_01_mp_m_2024_01",
+  5
+ ]
+}

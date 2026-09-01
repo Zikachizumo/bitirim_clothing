@@ -204,6 +204,12 @@ html, body {
 .tile .thumb.fit-legs  img { --nudge:  7.2%; }
 .tile .thumb.fit-feet  img { --nudge: -6.6%; }
 
+/*  KARE gorseller = model dosyasindan render edilmis, saydam zeminli parcalar.
+    Onlar zaten ortali ve pedsiz, yukaridaki kaydirma onlara UYMAZ. Gorsel
+    yuklenirken app.js en/boy esitse .iso ekliyor. Bu kural sonra geldigi icin
+    ayni ozgulukteki fit-* kurallarini eziyor. */
+.tile .thumb.iso img { --nudge: 0%; }
+
 .tile .cap {
     display: flex;
     align-items: center;

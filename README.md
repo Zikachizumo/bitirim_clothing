@@ -58,6 +58,7 @@ bağlı kalmasınlar diye repoya işlendi.
 | `/kiyafetcek ... yenile` | Var olan PNG'leri de yeniden çeker (çerçeveleme değişince gerekir). |
 | `/kiyafetcekdur` | Üretimi durdurur. |
 | `/kiyafetnokta` | Bulunduğun noktayı `Config.CaptureCoords` formatında yazar. |
+| `/kiyafetdok` | Katalog dökümü (`web/dump/<cinsiyet>.json`) — render eşlemesi için. |
 | `/kiyafetkamera <head\|torso\|legs\|feet> <z> <mesafe> [pitch]` | Önizleme kamerasını canlı ayarlar. Beğenilen değerler `client/preview.lua` içine geçirilir. |
 
 İlk ikisi `bitirim_clothing.dev` ACE yetkisi ister. Yetki **server'da** sorulur —
@@ -93,6 +94,24 @@ kaplıyordu (hedef ~%55) ve dikey merkezi %49.3'teydi. İki sonuç:
 
 `zoom` FOV'a çevrilirken oyunun varsayılan FOV'u `GetCamFov` ile **çalışırken
 okunuyor**, sabit varsayılmıyor.
+
+### Görseller: karma (render + oyun içi kare)
+
+Tile görselleri iki kaynaktan geliyor:
+
+- **Model dosyasından render** — bedensiz, saydam arka planlı, referans
+  tasarımdaki görünüm. GTA'nın kendi `.ydd`/`.ytd` dosyalarından çiziliyor.
+  Hattın tamamı ve dosya↔indeks eşlemesinin nasıl çözüldüğü:
+  [tools/render/README.md](tools/render/README.md).
+- **Oyun içi kare** (`/kiyafetcek`) — eşlemesi henüz kanıtlanamayan parçalar
+  için. Hiçbir tile boş kalmıyor.
+
+NUI ikisini yükleme anında ayırt ediyor: görselin eni boyuna eşitse (kare)
+render'dır ve yatay kaydırma uygulanmaz.
+
+**DİKKAT:** `/kiyafetcek ... yenile` var olan PNG'lerin üzerine yazar, yani
+render'ları oyun içi kareyle değiştirir. Argümansız `/kiyafetcek` var olanı
+atladığı için güvenlidir.
 
 ### Tile'da yatay ortalama (ölçüldü, yeniden çekim gerekmedi)
 

@@ -1,0 +1,474 @@
+{
+ "0": [
+  "mp_m_freemode_01_p",
+  0
+ ],
+ "1": [
+  "mp_m_freemode_01_p",
+  1
+ ],
+ "2": [
+  "mp_m_freemode_01_p",
+  2
+ ],
+ "3": [
+  "mp_m_freemode_01_p",
+  3
+ ],
+ "4": [
+  "mp_m_freemode_01_p",
+  4
+ ],
+ "5": [
+  "mp_m_freemode_01_p",
+  5
+ ],
+ "6": [
+  "mp_m_freemode_01_p",
+  6
+ ],
+ "7": [
+  "mp_m_freemode_01_p",
+  7
+ ],
+ "8": [
+  "mp_m_freemode_01_p",
+  8
+ ],
+ "9": [
+  "mp_m_freemode_01_p",
+  9
+ ],
+ "10": [
+  "mp_m_freemode_01_p",
+  10
+ ],
+ "11": [
+  "mp_m_freemode_01_p",
+  11
+ ],
+ "12": [
+  "mp_m_freemode_01_p",
+  12
+ ],
+ "13": [
+  "mp_m_freemode_01_p",
+  13
+ ],
+ "14": [
+  "mp_m_freemode_01_p",
+  14
+ ],
+ "15": [
+  "mp_m_freemode_01_p",
+  15
+ ],
+ "16": [
+  "mp_m_freemode_01_p",
+  16
+ ],
+ "17": [
+  "mp_m_freemode_01_p",
+  17
+ ],
+ "18": [
+  "mp_m_freemode_01_p",
+  18
+ ],
+ "19": [
+  "mp_m_freemode_01_p",
+  19
+ ],
+ "40": [
+  "mp_m_freemode_01_p_male_xmas2",
+  0
+ ],
+ "41": [
+  "mp_m_freemode_01_p_male_xmas2",
+  1
+ ],
+ "42": [
+  "mp_m_freemode_01_p_male_xmas2",
+  2
+ ],
+ "43": [
+  "mp_m_freemode_01_p_male_xmas2",
+  3
+ ],
+ "44": [
+  "mp_m_freemode_01_p_male_xmas2",
+  4
+ ],
+ "45": [
+  "mp_m_freemode_01_p_male_xmas2",
+  5
+ ],
+ "55": [
+  "mp_m_freemode_01_p_mp_m_lowrider_01",
+  0
+ ],
+ "56": [
+  "mp_m_freemode_01_p_mp_m_lowrider_01",
+  1
+ ],
+ "67": [
+  "mp_m_freemode_01_p_mp_m_stunt_01",
+  0
+ ],
+ "68": [
+  "mp_m_freemode_01_p_mp_m_stunt_01",
+  1
+ ],
+ "69": [
+  "mp_m_freemode_01_p_mp_m_stunt_01",
+  2
+ ],
+ "70": [
+  "mp_m_freemode_01_p_mp_m_stunt_01",
+  3
+ ],
+ "71": [
+  "mp_m_freemode_01_p_mp_m_stunt_01",
+  4
+ ],
+ "72": [
+  "mp_m_freemode_01_p_mp_m_stunt_01",
+  5
+ ],
+ "73": [
+  "mp_m_freemode_01_p_mp_m_stunt_01",
+  6
+ ],
+ "74": [
+  "mp_m_freemode_01_p_mp_m_stunt_01",
+  7
+ ],
+ "75": [
+  "mp_m_freemode_01_p_mp_m_stunt_01",
+  8
+ ],
+ "76": [
+  "mp_m_freemode_01_p_mp_m_stunt_01",
+  9
+ ],
+ "77": [
+  "mp_m_freemode_01_p_mp_m_stunt_01",
+  10
+ ],
+ "78": [
+  "mp_m_freemode_01_p_mp_m_stunt_01",
+  11
+ ],
+ "79": [
+  "mp_m_freemode_01_p_mp_m_stunt_01",
+  12
+ ],
+ "80": [
+  "mp_m_freemode_01_p_mp_m_stunt_01",
+  13
+ ],
+ "81": [
+  "mp_m_freemode_01_p_mp_m_stunt_01",
+  14
+ ],
+ "82": [
+  "mp_m_freemode_01_p_mp_m_stunt_01",
+  15
+ ],
+ "83": [
+  "mp_m_freemode_01_p_mp_m_bikerdlc_01",
+  0
+ ],
+ "84": [
+  "mp_m_freemode_01_p_mp_m_bikerdlc_01",
+  1
+ ],
+ "85": [
+  "mp_m_freemode_01_p_mp_m_bikerdlc_01",
+  2
+ ],
+ "86": [
+  "mp_m_freemode_01_p_mp_m_bikerdlc_01",
+  3
+ ],
+ "87": [
+  "mp_m_freemode_01_p_mp_m_bikerdlc_01",
+  4
+ ],
+ "88": [
+  "mp_m_freemode_01_p_mp_m_bikerdlc_01",
+  5
+ ],
+ "89": [
+  "mp_m_freemode_01_p_mp_m_bikerdlc_01",
+  6
+ ],
+ "90": [
+  "mp_m_freemode_01_p_mp_m_bikerdlc_01",
+  7
+ ],
+ "91": [
+  "mp_m_freemode_01_p_mp_m_bikerdlc_01",
+  8
+ ],
+ "92": [
+  "mp_m_freemode_01_p_mp_m_bikerdlc_01",
+  9
+ ],
+ "93": [
+  "mp_m_freemode_01_p_mp_m_bikerdlc_01",
+  10
+ ],
+ "94": [
+  "mp_m_freemode_01_p_mp_m_bikerdlc_01",
+  11
+ ],
+ "95": [
+  "mp_m_freemode_01_p_mp_m_bikerdlc_01",
+  12
+ ],
+ "96": [
+  "mp_m_freemode_01_p_mp_m_importexport_01",
+  0
+ ],
+ "97": [
+  "mp_m_freemode_01_p_mp_m_importexport_01",
+  1
+ ],
+ "98": [
+  "mp_m_freemode_01_p_mp_m_importexport_01",
+  2
+ ],
+ "99": [
+  "mp_m_freemode_01_p_mp_m_importexport_01",
+  3
+ ],
+ "100": [
+  "mp_m_freemode_01_p_mp_m_importexport_01",
+  4
+ ],
+ "101": [
+  "mp_m_freemode_01_p_mp_m_importexport_01",
+  5
+ ],
+ "102": [
+  "mp_m_freemode_01_p_mp_m_importexport_01",
+  6
+ ],
+ "112": [
+  "mp_m_freemode_01_p_mp_m_smuggler_01",
+  0
+ ],
+ "113": [
+  "mp_m_freemode_01_p_mp_m_smuggler_01",
+  1
+ ],
+ "114": [
+  "mp_m_freemode_01_p_mp_m_smuggler_01",
+  2
+ ],
+ "115": [
+  "mp_m_freemode_01_p_mp_m_smuggler_01",
+  3
+ ],
+ "116": [
+  "mp_m_freemode_01_p_mp_m_smuggler_01",
+  4
+ ],
+ "117": [
+  "mp_m_freemode_01_p_mp_m_smuggler_01",
+  5
+ ],
+ "118": [
+  "mp_m_freemode_01_p_mp_m_smuggler_01",
+  6
+ ],
+ "119": [
+  "mp_m_freemode_01_p_mp_m_smuggler_01",
+  7
+ ],
+ "120": [
+  "mp_m_freemode_01_p_mp_m_smuggler_01",
+  8
+ ],
+ "135": [
+  "mp_m_freemode_01_p_mp_m_vinewood",
+  0
+ ],
+ "136": [
+  "mp_m_freemode_01_p_mp_m_vinewood",
+  1
+ ],
+ "137": [
+  "mp_m_freemode_01_p_mp_m_heist3",
+  0
+ ],
+ "138": [
+  "mp_m_freemode_01_p_mp_m_heist3",
+  1
+ ],
+ "139": [
+  "mp_m_freemode_01_p_mp_m_heist3",
+  2
+ ],
+ "140": [
+  "mp_m_freemode_01_p_mp_m_heist3",
+  3
+ ],
+ "141": [
+  "mp_m_freemode_01_p_mp_m_heist3",
+  4
+ ],
+ "142": [
+  "mp_m_freemode_01_p_mp_m_heist3",
+  5
+ ],
+ "143": [
+  "mp_m_freemode_01_p_mp_m_heist3",
+  6
+ ],
+ "144": [
+  "mp_m_freemode_01_p_mp_m_heist3",
+  7
+ ],
+ "145": [
+  "mp_m_freemode_01_p_mp_m_heist3",
+  8
+ ],
+ "146": [
+  "mp_m_freemode_01_p_mp_m_heist3",
+  9
+ ],
+ "147": [
+  "mp_m_freemode_01_p_mp_m_heist3",
+  10
+ ],
+ "148": [
+  "mp_m_freemode_01_p_mp_m_heist3",
+  11
+ ],
+ "173": [
+  "mp_m_freemode_01_p_mp_m_christmas3",
+  0
+ ],
+ "174": [
+  "mp_m_freemode_01_p_mp_m_christmas3",
+  1
+ ],
+ "175": [
+  "mp_m_freemode_01_p_mp_m_christmas3",
+  2
+ ],
+ "176": [
+  "mp_m_freemode_01_p_mp_m_christmas3",
+  3
+ ],
+ "177": [
+  "mp_m_freemode_01_p_mp_m_christmas3",
+  4
+ ],
+ "178": [
+  "mp_m_freemode_01_p_mp_m_christmas3",
+  5
+ ],
+ "179": [
+  "mp_m_freemode_01_p_mp_m_christmas3",
+  6
+ ],
+ "180": [
+  "mp_m_freemode_01_p_mp_m_christmas3",
+  7
+ ],
+ "181": [
+  "mp_m_freemode_01_p_mp_m_christmas3",
+  8
+ ],
+ "182": [
+  "mp_m_freemode_01_p_mp_m_christmas3",
+  9
+ ],
+ "183": [
+  "mp_m_freemode_01_p_mp_m_christmas3",
+  10
+ ],
+ "184": [
+  "mp_m_freemode_01_p_mp_m_christmas3",
+  11
+ ],
+ "185": [
+  "mp_m_freemode_01_p_mp_m_christmas3",
+  12
+ ],
+ "186": [
+  "mp_m_freemode_01_p_mp_m_christmas3",
+  13
+ ],
+ "187": [
+  "mp_m_freemode_01_p_mp_m_2023_01",
+  0
+ ],
+ "188": [
+  "mp_m_freemode_01_p_mp_m_2023_01",
+  1
+ ],
+ "189": [
+  "mp_m_freemode_01_p_mp_m_2023_01",
+  2
+ ],
+ "190": [
+  "mp_m_freemode_01_p_mp_m_2023_01",
+  3
+ ],
+ "191": [
+  "mp_m_freemode_01_p_mp_m_2023_01",
+  4
+ ],
+ "192": [
+  "mp_m_freemode_01_p_mp_m_2023_01",
+  5
+ ],
+ "193": [
+  "mp_m_freemode_01_p_mp_m_2023_01",
+  6
+ ],
+ "194": [
+  "mp_m_freemode_01_p_mp_m_2023_01",
+  7
+ ],
+ "195": [
+  "mp_m_freemode_01_p_mp_m_2023_01",
+  8
+ ],
+ "196": [
+  "mp_m_freemode_01_p_mp_m_2023_01",
+  9
+ ],
+ "214": [
+  "mp_m_freemode_01_p_mp_m_2024_01",
+  0
+ ],
+ "215": [
+  "mp_m_freemode_01_p_mp_m_2024_01",
+  1
+ ],
+ "216": [
+  "mp_m_freemode_01_p_mp_m_2024_01",
+  2
+ ],
+ "217": [
+  "mp_m_freemode_01_p_mp_m_2024_01",
+  3
+ ],
+ "218": [
+  "mp_m_freemode_01_p_mp_m_2024_01",
+  4
+ ],
+ "219": [
+  "mp_m_freemode_01_p_mp_m_2024_01",
+  5
+ ],
+ "220": [
+  "mp_m_freemode_01_p_mp_m_2024_01",
+  6
+ ]
+}

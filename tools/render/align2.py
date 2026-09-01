@@ -44,7 +44,7 @@ CATS = [
     ('arms',      '3',  'components', 'uppr',   'uppr'),
 ]
 
-MAX_TILINGS = 200          # bu kadar cozum bulununca "belirsiz" say, dur
+MAX_TILINGS = 20000        # kesisim icin tum cozumler lazim; limit yuksek
 
 
 def findall(hay, need):
@@ -173,19 +173,45 @@ def main():
 
         unresolved = []
         for lo, hi in ranges([i for i in range(len(runtime)) if i not in taken]):
-            sols = tilings(runtime, lo, hi, pool,
-                           rank=rank,
-                           lo_rank=anchor_rank(lo - 1, -1),
-                           hi_rank=anchor_rank(hi + 1, 1))
-            if len(sols) == 1:
-                for p, folder in sols[0]:
-                    nums, s = seqs[folder]
+            # Kronolojik sira kisiti KULLANILMIYOR: denendi, belirsizligi
+            # azaltti ama kapsamayi da dusurdu (1310 -> 1306). Sebep, bir
+            # klasorun 'paketi'nin onu ilk buldugum arsive gore atanmasi --
+            # o da gec bir patch olabiliyor, yani sira guvenilmez.
+            sols = tilings(runtime, lo, hi, pool)
+
+            if not sols:
+                unresolved.append((lo, hi, 0))
+                continue
+
+            #[ TUM DOSEMELERIN KESISIMI ]
+            # Bosluk tek sekilde dosenmiyor olabilir ama bazi konumlarda TUM
+            # cozumler ayni parcayi koyuyorsa o konum yine de kanitlanmistir.
+            # Sadece "tek doseme" aramak bu bilgiyi cope atiyordu.
+            common = None
+            for sol in sols:
+                cur = {}
+                for pos, folder in sol:
+                    nums, sq = seqs[folder]
                     for i, num in enumerate(nums):
-                        mapping[p + i] = (folder, num)
-                        taken.add(p + i)
-                    placed.add(folder)
-                    pool.pop(folder, None)
-            else:
+                        cur[pos + i] = (folder, num)
+                if common is None:
+                    common = cur
+                else:
+                    common = {k: v for k, v in common.items()
+                              if k in cur and cur[k] == v}
+                if not common:
+                    break
+
+            if common:
+                used_folders = set()
+                for k, v in common.items():
+                    mapping[k] = v
+                    taken.add(k)
+                    used_folders.add(v[0])
+                for f in used_folders:
+                    placed.add(f)
+                    pool.pop(f, None)
+            if len(common or {}) < (hi - lo + 1):
                 unresolved.append((lo, hi, len(sols)))
 
         cov = len(taken)

@@ -62,8 +62,25 @@ birebir aynı giysi**. Zincir uçtan uca kanıtlandı.
 | gözlük | 37 | 59 | %62.7 |
 | şapka | 136 | 221 | %61.5 |
 
-Eşlenen 1145 parçanın **1139'u render edildi** (%99.5). Kalan 6'sı `A8`
+Eşlenen 1155 parçanın **1149'u render edildi** (%99.5). Kalan 6'sı `A8`
 doku formatında — BC1/BC3 dışı, desteklenmiyor.
+
+### Şapka ve gözlük neden geride (çözülmedi)
+
+Bileşenlerde her doku varyantı için ayrı bir `.ytd` dosyası var, o yüzden
+dosyadan saymak işe yarıyor. **Prop'larda yaramıyor** — ölçüldü:
+
+    mpbiker anchor 0 (şapka), .ymt'ye göre : [1, 4, 10, 10, 10, 10, 4, ...]
+    aynı klasörün .ytd dosyalarından sayım : [7, 10, 1,  1,  1,  1, ...]
+
+Oyun `.ymt`'deki değerleri bildiriyor. `props_ymt.py` bunu okuyor ve
+**temel ped tam oturuyor** (n=20, konum 0) — dosya sayımının asla
+yapamadığı şey. Ama DLC tarafı hâlâ eksik: ymt'lerden 186 şapka çıkıyor,
+oyunda 221 var, ve DLC dizileri listede bulunamıyor.
+
+Muhtemel sebep: aynı klasör için birden çok ymt var (paket + patch'ler) ve
+hangisinin geçerli olduğu belirsiz. "En dolu sürümü tut" denendi, değiştirmedi.
+Bu yüzden şapka %62, gözlük %66'da duruyor.
 
 ### Arşiv gezintisi: nerelere inilmeli
 

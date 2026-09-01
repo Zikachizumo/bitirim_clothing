@@ -39,7 +39,7 @@ bağlı kalmasınlar diye repoya işlendi.
 
 ### Bekleyen
 
-- Katman 1 (`GetNumForcedComponents`) kapsam ölçümü — bkz. COMPATIBILITY.md
+- ⚠️ **Katman 1 ölçüldü: %0 kapsam.** Üst giysilerin %98'i DefaultArms'a düşüyor — ten/mesh sorunu ÇÖZÜLMÜŞ DEĞİL. Doğru native zinciri `/kiyafetprob` ile aranıyor.
 - Kadın `DefaultArms` ve kadın kol blacklist'i hiç ölçülmedi
 - Thumbnail üretimi (katalog taraması yapıldı)
 - Kamera çerçeveleme değerlerinin oyunda ölçülmesi (`/kiyafetkamera`)
@@ -50,6 +50,7 @@ bağlı kalmasınlar diye repoya işlendi.
 |---|---|
 | `/kiyafetkapsam` | Katman 1'in (oyunun kendi verisi) kaç üst giysiyi kapsadığını **ölçer**. Elle taramaya devam edilip edilmeyeceğini bu belirler. |
 | `/kiyafetsay` | Katalog taramasının kategori başına kaç parça bulduğunu yazar. |
+| `/kiyafetprob` | Hangi native zincirinin gerçekten veri döndürdüğünü **ölçer**. Katman 1 sıfır çektikten sonra eklendi. |
 | `/kiyafetkamera <head\|torso\|legs\|feet> <z> <mesafe> [pitch]` | Önizleme kamerasını canlı ayarlar. Beğenilen değerler `client/preview.lua` içine geçirilir. |
 
 İlk ikisi `bitirim_clothing.dev` ACE yetkisi ister. Yetki **server'da** sorulur —

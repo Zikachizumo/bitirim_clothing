@@ -100,24 +100,47 @@ Hiçbir katman cevap vermezse `Config.DefaultArms`:
 `male = 135` (oyunda ölçüldü, **eldivenli** bir parça),
 `female = -1` (**ölçülmedi** → kola hiç dokunma).
 
-## Sıradaki iş: katman 1'in kapsamını ÖLÇ
+## ÖLÇÜM SONUCU (2026-09-01) — katman 1 çalışmıyor
 
-Önceki yaklaşım her üst giysiyi ~214 kola karşı **elle, gözle** test etmekti;
-2026-08-24'te haklı olarak bırakıldı (11 üst giysi için 2613 satır sürdü).
-
-Onu tekrarlamaya gerek yok. Katman 1 oyunun kendi verisi olduğu için
-**insansız** ölçülebilir: her Top drawable için `GetNumForcedComponents`
-çağır, kaçının kol cevabı verdiğini say.
+`/kiyafetkapsam`, `mp_m_freemode_01`, FiveM b3788, GTA V Enhanced:
 
 ```
-/kiyafetkapsam        → "N top tarandı, M tanesi için oyun kol veriyor (%X)"
+taranan üst giysi : 544
+katman 1 (oyun)   :   0   (%0.0)   <-- hiç cevap vermiyor
+katman 2 (DB)     :  11   (%2.0)
+kapsanmayan       : 533   (%98.0)
 ```
 
-Bu tek komut, elle taramaya devam etmeye değip değmeyeceğini söyler.
-Katman 1 yüksek kapsam veriyorsa manuel tarama tamamen gereksiz; düşükse
-sadece **açıkta kalan** üst giysiler taranır — hepsi değil.
+**Katman 1 bu sunucuda veri döndürmüyor.** `GetNumForcedComponents` /
+`GetForcedComponent` çifti freemode ped'ler için 544 üst giysinin hiçbirinde
+sonuç vermedi — blacklist yüzünden elenen bir cevap da yok (o sayaç da 0).
 
-Çıkan sayı buraya yazılacak. **Şu an ölçülmedi, tahmin de edilmeyecek.**
+Sonuç: üst giysilerin **%98'i `Config.DefaultArms` (erkek 135) ile giyiliyor**.
+Bu tek bir eldivenli kol; her üst giysiyle uyumlu olması beklenemez. **Ten
+taşması / şeffaf mesh sorunu bu haliyle çözülmüş değildir.**
+
+Bu çift `bitirim_inventory`'de de aynı şekilde kullanılıyor
+(`equipment_client.lua:71`) — orada da sessizce `nil` dönüyor olması çok
+muhtemel; envanterin `defaultArms` değerine düşme davranışı bunu maskeliyor.
+
+### Neden elle tarama cevap değil
+
+533 açıkta kalan üst giysi × ~214 kol adayı = ~114.000 görsel karar.
+11 üst giysi için 2613 satır tutmuştu. Bu yol kapalı.
+
+### Sıradaki adım: doğru native zincirini ÖLÇ
+
+`/kiyafetprob` her aday zincir için üç şeyi ayrı raporlar: native gerçekten
+var mı, çağrılınca patlıyor mu, sıfırdan büyük sonuç dönüyor mu.
+
+| Zincir | Yol |
+|---|---|
+| A | `GetNumForcedComponents(model, 11, drawable, p3)` — `p3 = 0..3` varyasyonları |
+| B | `GetHashNameForComponent` → `GetShopPedApparelVariantComponentCount` → `...AtIndex`; `componentType == 3` olan kayıt kol cevabıdır |
+
+Örnek üst giysiler aralık boyunca yayıldı; **14..24 kontrol grubudur** — DB o
+aralığı biliyor, doğru zincir orada kesinlikle cevap vermeli. Bir zincir
+kontrol grubunda cevap veriyorsa katman 1 o zincirle yeniden yazılır.
 
 ## Kurulum / deploy
 

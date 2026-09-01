@@ -35,6 +35,29 @@ local function isBaseState(componentId, drawable)
     return base ~= nil and base.drawable == drawable
 end
 
+--[[
+    BOS YER TUTUCULAR DA KATALOGA GIRMEZ.
+
+    Oyunun listesinde olan ama giyilince ekranda hicbir sey gostermeyen
+    parcalar (bkz. data/empty.lua -- 4x4 A8 yer tutucu doku + bos oyun ici
+    kare ile dogrulandi). Satin alinacak bir sey degiller.
+]]
+local emptyItems = {}
+do
+    local ok, data = pcall(lib.load, 'data.empty')
+    if ok and type(data) == 'table' then
+        emptyItems = data
+    else
+        print('^3[bitirim_clothing] data/empty.lua yuklenemedi -- bos parcalar katalogda kalacak.^7')
+    end
+end
+
+local function isEmpty(gender, categoryKey, drawable)
+    local g = emptyItems[gender]
+    local c = g and g[categoryKey]
+    return c ~= nil and c[drawable] == true
+end
+
 local function scanComponent(ped, componentId)
     local out = {}
     local drawableCount = GetNumberOfPedDrawableVariations(ped, componentId)
@@ -105,15 +128,15 @@ function Catalog.get(ped, category)
         Lazy erisim: Hidden modulu bu dosyadan sonra yuklenmis olabilir.
     ]]
     local Hidden = BitirimClothing.Hidden
-    if Hidden then
-        local kept = {}
-        for _, entry in ipairs(result) do
-            if not Hidden.is(gender, category.key, entry.d) then
-                kept[#kept + 1] = entry
-            end
+    local kept = {}
+    for _, entry in ipairs(result) do
+        local drop = isEmpty(gender, category.key, entry.d)
+                  or (Hidden ~= nil and Hidden.is(gender, category.key, entry.d))
+        if not drop then
+            kept[#kept + 1] = entry
         end
-        result = kept
     end
+    result = kept
 
     --[[
         Parcanin GERCEK adini ekle (GTA'nin magaza verisinden, bkz.

@@ -122,10 +122,15 @@
             tile.className = 'tile';
             tile.dataset.drawable = entry.d;
 
-            // Thumbnail henuz uretilmemis olabilir -> numara ile fallback.
+            // Butun gorseller artik model dosyasindan render edilmis, saydam
+            // zeminli, KARE parcalar. Eskiden oyun ekranindan alinmis 512x280
+            // kareler de vardi ve pedi ortalamak icin kategoriye gore yatay
+            // kaydirma (fit-* / .iso) gerekiyordu; onlar kalmadigi icin o
+            // mekanizma da kaldirildi.
+            // Gorsel eksik kalirsa numara ile fallback.
             const src = `images/${S.category.slot || S.category.key}_${entry.d}.png`;
             tile.innerHTML =
-                `<div class="thumb fit-${S.category.camera || 'torso'}"><img src="${src}" alt="" onload="if(this.naturalWidth===this.naturalHeight)this.parentElement.classList.add('iso')" onerror="this.replaceWith(document.createTextNode('${entry.d}'))"></div>` +
+                `<div class="thumb"><img src="${src}" alt="" onerror="this.replaceWith(document.createTextNode('${entry.d}'))"></div>` +
                 `<div class="cap"><span class="caret">&#9662;</span>${entry.name || S.category.itemLabel || S.category.label}</div>`;
 
             tile.addEventListener('click', () => selectTile(entry, tile));

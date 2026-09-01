@@ -17,7 +17,10 @@ from collections import defaultdict
 
 import fivefury as ff
 
-GTA = r'D:\SteamLibrary\steamapps\common\Grand Theft Auto V Enhanced'
+# FiveM b3323 LEGACY GTA V uzerinde calisiyor -- kaynak da o olmali.
+GTA = os.environ.get('GTA_DIR',
+    os.path.join('D:', os.sep, 'SteamLibrary', 'steamapps', 'common',
+                 'Grand Theft Auto V'))
 DLC = os.path.join(GTA, 'update', 'x64', 'dlcpacks')
 
 YDD = re.compile(r'^([a-z_]+?)_(\d{3})_[a-z]\.ydd$')
@@ -104,18 +107,20 @@ def build(who):
         for f in set(acc) - before:
             origin[f] = label
 
+    # Bir pakette birden fazla dlc*.rpf olabilir (mpbattle/mpheist4/
+    # mpsecurity/mptuner erkek giysilerini dlc1.rpf ve dlc2.rpf'te tutuyor).
     for pack in sorted(os.listdir(DLC)):
-        p = os.path.join(DLC, pack, 'dlc.rpf')
-        if not os.path.exists(p):
-            continue
-        try:
-            ar = ff.load_rpf(p)
-        except Exception:
-            continue
-        before = set(acc)
-        scan_archive(ar, acc, src)
-        for f in set(acc) - before:
-            origin[f] = pack
+        for fn in sorted(os.listdir(os.path.join(DLC, pack))):
+            if not re.match(r'^dlc\d*\.rpf$', fn.lower()):
+                continue
+            try:
+                ar = ff.load_rpf(os.path.join(DLC, pack, fn))
+            except Exception:
+                continue
+            before = set(acc)
+            scan_archive(ar, acc, src)
+            for f in set(acc) - before:
+                origin[f] = pack
 
     # sadece istenen ped
     acc = {f: c for f, c in acc.items() if who in f}

@@ -23,7 +23,10 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import fivefury as ff
 import render_ydd
 
-GTA = r'D:\SteamLibrary\steamapps\common\Grand Theft Auto V Enhanced'
+# FiveM b3323 LEGACY GTA V uzerinde calisiyor -- kaynak da o olmali.
+GTA = os.environ.get('GTA_DIR',
+    os.path.join('D:', os.sep, 'SteamLibrary', 'steamapps', 'common',
+                 'Grand Theft Auto V'))
 DLC = os.path.join(GTA, 'update', 'x64', 'dlcpacks')
 
 # slot -> dosya oneki
@@ -69,10 +72,14 @@ def sources():
         p = os.path.join(GTA, 'update', f)
         if os.path.exists(p):
             yield p
+    # BIR PAKETTE BIRDEN FAZLA dlc*.rpf OLABILIR. mpbattle/mpheist4/
+    # mpsecurity/mptuner erkek giysilerini dlc1.rpf ve dlc2.rpf'te tutuyor.
+    # Sadece dlc.rpf'e bakmak bu dort paketi neredeyse tamamen kaciriyordu:
+    # olculdu, tuner klasorunde 10 dosya gorunuyordu, gercegi 94.
     for d in sorted(os.listdir(DLC)):
-        p = os.path.join(DLC, d, 'dlc.rpf')
-        if os.path.exists(p):
-            yield p
+        for f in sorted(os.listdir(os.path.join(DLC, d))):
+            if re.match(r'^dlc\d*\.rpf$', f.lower()):
+                yield os.path.join(DLC, d, f)
 
 
 def index_archive(archive, want, ydds, ytds):
@@ -101,8 +108,13 @@ def index_archive(archive, want, ydds, ytds):
             m = re.match(r'^([a-z_]+?)_diff_(\d{3})_([a-z])(?:_.*)?\.ytd$', f)
             if m:
                 k = (folder, m.group(1), int(m.group(2)))
-                if k in want and (k not in ytds or m.group(3) < ytds[k][0]):
-                    ytds[k] = (m.group(3), archive, e)
+                if k in want:
+                    # TEK ADAY TUTMAK YANLIS: ayni isimli doku birden fazla
+                    # arsivde bulunabiliyor ve bazi kopyalari cozulemeyen
+                    # formatta (olculdu: mptuner feet_diff_002_a_uni hem BC4
+                    # hem BC1 olarak var; ilk bulunan BC4 render'i patlatiyordu).
+                    # Hepsini topluyoruz, render sirasinda cozuleni kullanacagiz.
+                    ytds.setdefault(k, []).append((m.group(3), archive, e))
 
 
 def index_walk(archive, want, ydds, ytds, depth=0):
@@ -160,20 +172,35 @@ def main():
         if k not in ytds:
             stats['doku_yok'] += 1
             continue
+        yp = os.path.join(tmp, 'a.ydd')
+        tp = os.path.join(tmp, 'a.ytd')
+        last = None
+        done = False
         try:
-            yp = os.path.join(tmp, 'a.ydd')
-            tp = os.path.join(tmp, 'a.ytd')
             open(yp, 'wb').write(ar.read_entry_standalone(ydd_e))
-            _, tar, te = ytds[k]
-            open(tp, 'wb').write(tar.read_entry_standalone(te))
-            render_ydd.render(yp, tp, out, size=512, yaw=180, quiet=True)
-            stats['yazildi'] += 1
-            if stats['yazildi'] % 100 == 0:
-                print('  %d yazildi  %.0f sn' % (stats['yazildi'], time.time() - t0))
         except Exception as ex:
             stats['hata'] += 1
             if stats['hata'] <= 8:
-                print('  HATA %s %s_%03d: %s' % (k[0][-24:], k[1], k[2], ex))
+                print('  HATA(ydd) %s %s_%03d: %s' % (k[0][-24:], k[1], k[2], ex))
+            continue
+        # En dusuk varyant harfi tercih edilir; ayni harfin cozulemeyen
+        # kopyasi varsa bir sonrakine gecilir.
+        for _letter, tar, te in sorted(ytds[k], key=lambda x: x[0]):
+            try:
+                open(tp, 'wb').write(tar.read_entry_standalone(te))
+                render_ydd.render(yp, tp, out, size=512, yaw=180, quiet=True)
+                done = True
+                break
+            except Exception as ex:
+                last = ex
+        if done:
+            stats['yazildi'] += 1
+            if stats['yazildi'] % 100 == 0:
+                print('  %d yazildi  %.0f sn' % (stats['yazildi'], time.time() - t0))
+        else:
+            stats['hata'] += 1
+            if stats['hata'] <= 12:
+                print('  HATA %s %s_%03d: %s' % (k[0][-24:], k[1], k[2], last))
 
     print('\nbitti: %(yazildi)d yazildi, %(atlandi)d zaten vardi, '
           '%(hata)d hata, %(doku_yok)d dokusuz' % stats)

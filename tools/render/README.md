@@ -85,26 +85,90 @@ Doğrulama (`verify.py`): 157 / 206 / 413 numaralı üst giysiler dosyadan rende
 edilip oyundan çekilmiş aynı numaralı karelerle karşılaştırıldı — **üçü de
 birebir aynı giysi**. Zincir uçtan uca kanıtlandı.
 
-## Kapsama (erkek, 2026-09-01)
+## Kapsama (erkek, 2026-09-02)
 
 | kategori | eşleşen | toplam | oran |
 |---|---|---|---|
 | üst giysi | 544 | 544 | **%100** |
-| pantolon | 202 | 202 | **%100** |
 | tişört | 213 | 213 | **%100** |
-| gözlük | 58 | 59 | %98.3 |
-| ayakkabı | 148 | 151 | %98.0 |
-| şapka | 213 | 221 | %96.4 |
-| kol (uppr) | 198 | 214 | %92.5 |
+| pantolon | 202 | 202 | **%100** |
+| ayakkabı | 151 | 151 | **%100** |
+| şapka | 221 | 221 | **%100** |
+| gözlük | 59 | 59 | **%100** |
+| kol (uppr) | 198 | 214 | %92.5 (mağazada gösterilmiyor) |
 
-Sunucuda **1246 render + 144 oyun karesi**. Render edilemeyen 109 parça
-4 DLC'den (tuner, battle, heist4, security): shop.meta onları listeliyor ama
-model dosyaları bu oyun sürümünde bulunamıyor.
+Sunucuda **1384 render, 0 oyun karesi**. Mağazadaki her tile artık model
+dosyasından çizilmiş, saydam zeminli bir parça.
 
-Eşlenen 1155 parçanın **1149'u render edildi** (%99.5). Kalan 6'sı `A8`
-doku formatında — BC1/BC3 dışı, desteklenmiyor.
+Eşlenen 1390 parçanın 1384'ü render edildi. Kalan 6'sı boş yer tutucu
+(bkz. aşağıda) ve katalogdan çıkarıldı.
 
-### Şapka ve gözlük neden geride (çözülmedi)
+### KÖK SEBEP: bir pakette birden fazla `dlc*.rpf` olabilir
+
+Uzun süre "tuner / battle / heist4 / security DLC'lerinin erkek giysileri bu
+oyun sürümünde yok" sanıldı — 132 parça bu yüzden render edilemiyordu.
+Yanlıştı. O dört paket giysilerini **`dlc1.rpf` ve `dlc2.rpf`** içinde
+tutuyor, tarayıcı ise yalnızca `dlc.rpf`'i açıyordu:
+
+```
+mpbattle/   dlc.rpf  dlc1.rpf
+mpheist4/   dlc.rpf  dlc1.rpf  dlc2.rpf
+mpsecurity/ dlc.rpf  dlc1.rpf
+mptuner/    dlc.rpf  dlc1.rpf
+```
+
+Oyunun tamamında sadece bu dört pakette var. Düzeltince `mp_m_tuner`
+klasöründe görünen dosya sayısı 10'dan 94'e, `mp_m_heist4` 7'den 59'a çıktı.
+
+**Ders:** "paket = dlc.rpf" bir varsayımdı ve dört yerde yanlıştı. Paket
+klasöründeki `dlc*.rpf` dosyalarının hepsi açılmalı.
+
+### Kaynak: Legacy kurulum, Enhanced değil
+
+Sunucu FiveM **b3323** üzerinde çalışıyor, o da **Legacy** GTA V'i kullanıyor;
+araçlar artık `Grand Theft Auto V` klasörünü okuyor (`GTA_DIR` ile
+değiştirilebilir). Enhanced kurulumu bu dört pakette giysi arşivi hiç
+içermiyor — `mptuner/dlc.rpf` içinde `mptuner_female.rpf` var ama erkek
+karşılığı yok.
+
+shop.meta iki kurulumda birebir aynı çıktı (44 dosya, 16.471 kayıt), yani
+daha önce Enhanced'dan kurulan eşleme geçerliliğini koruyor.
+
+### shop.meta'nın kapsamadığı 12 parça
+
+12 parçanın apparel hash'i 16.471 kaydın hiçbirinde yok — GTA Online'da
+mağazadan satılmıyorlar. Üç kısıtın kesişimiyle çözüldüler
+(`tools/render/extra_map.py`):
+
+1. boşluk, eşlenmiş komşuları arasında → hangi DLC aralığına düştüğü belli
+2. o dönemin **kullanılmayan** dosyaları sayılı (tam indeksten çıkarıldı)
+3. oyunun bildirdiği doku sayısı = dosyanın doku varyantı sayısı
+
+Gözlük 23 için özellikle güçlü: oyunun tamamında kullanılmayan **tek bir**
+`p_eyes` dosyası var. Yine de hepsi oyun içi karelerle görsel olarak
+karşılaştırıldı — şapka 61 (yeşil bantlı siyah fötr), şapka 64 (mavi ekose
+fötr), ayakkabı 17 (kırmızı-yeşil elf ayakkabısı) ve ayakkabı 40 (mavi
+spor ayakkabı) birebir tuttu.
+
+### Boş yer tutucular (6 parça, katalogdan çıkarıldı)
+
+`data/empty.lua`. Bunlar oyunun listesinde görünen ama giyilince ekranda
+hiçbir şey göstermeyen parçalar. İki bağımsız ölçüm:
+
+- tek dokuları **4x4 `A8`** yer tutucu (gerçek parçalar 512x512 BC1/BC3)
+- `/kiyafetcek` kareleri boş: ayakkabı yerine çıplak ayak, şapka yerine
+  kel kafa, gözlük yok, üst giysi yok
+
+Satın alınabilir bir şey olmadıkları için katalogdan tamamen çıkarıldılar.
+
+### Aynı isimli dokunun çözülemeyen kopyası
+
+`mptuner` içinde `feet_diff_002_a_uni` hem BC4 hem BC1 olarak var (patch ile
+gelen kopya + asıl). İlk bulunanı kullanmak render'ı patlatıyordu. `batch.py`
+artık bir parçanın bütün doku adaylarını topluyor ve çözülebilen ilkini
+kullanıyor.
+
+### Prop'larda doku sayısı parmak izi neden zayıf
 
 Bileşenlerde her doku varyantı için ayrı bir `.ytd` dosyası var, o yüzden
 dosyadan saymak işe yarıyor. **Prop'larda yaramıyor** — ölçüldü:
@@ -112,14 +176,14 @@ dosyadan saymak işe yarıyor. **Prop'larda yaramıyor** — ölçüldü:
     mpbiker anchor 0 (şapka), .ymt'ye göre : [1, 4, 10, 10, 10, 10, 4, ...]
     aynı klasörün .ytd dosyalarından sayım : [7, 10, 1,  1,  1,  1, ...]
 
-Oyun `.ymt`'deki değerleri bildiriyor. `props_ymt.py` bunu okuyor ve
-**temel ped tam oturuyor** (n=20, konum 0) — dosya sayımının asla
-yapamadığı şey. Ama DLC tarafı hâlâ eksik: ymt'lerden 186 şapka çıkıyor,
-oyunda 221 var, ve DLC dizileri listede bulunamıyor.
+Oyun `.ymt`'deki değerleri bildiriyor. `props_ymt.py` bunu okuyor ve temel
+ped tam oturuyor (n=20, konum 0), ama DLC tarafı eksik kalıyor — aynı klasör
+için birden çok ymt var (paket + patch'ler) ve hangisinin geçerli olduğu
+belirsiz.
 
-Muhtemel sebep: aynı klasör için birden çok ymt var (paket + patch'ler) ve
-hangisinin geçerli olduğu belirsiz. "En dolu sürümü tut" denendi, değiştirmedi.
-Bu yüzden şapka %62, gözlük %66'da duruyor.
+Bu yüzden şapka/gözlük parmak izi %62-68'de takılıyordu. **Sorun shop.meta
+ile çözüldü** (%100); parmak izi artık yalnızca çapraz doğrulama için
+kullanılıyor.
 
 ### Arşiv gezintisi: nerelere inilmeli
 
@@ -133,15 +197,16 @@ arama (`hunt_folders.py`) giysilerin dağılımını gösterdi:
 - Bir parçanın `.ydd`'si ile `.ytd`'si **farklı arşivlerde** olabiliyor
   (`mp2024_02_male.rpf` ↔ `patch2025_01_male.rpf`). Arşiv başına eşleştirmek
   39 parçayı "dokusuz" diye eliyordu; önce global indeks, sonra render.
-- `mptuner/dlc.rpf` içinde hiç giysi arşivi **yok** — Enhanced sürümü
-  taşımış.
+- `mptuner/dlc.rpf` içinde giysi arşivi **yok** — ama paket eksik değil,
+  giysiler `mptuner/dlc1.rpf`'te. Bkz. yukarıdaki kök sebep bölümü.
 
 Ama filtresiz inmek de yanlış: tüm iç arşivlere inince (depth<3, filtresiz)
 fazladan doku bulunup parmak izi dizisi bozuldu ve kapsama 441'den 331'e
 **düştü**. Filtre hedefli olmalı (`_giysi_arsivi` / `_clothing_rpf`).
 
-Eşlenemeyen parçalar **oyun içi karelerini korur** (`/kiyafetcek` çıktısı),
-yani hiçbir tile boş kalmaz.
+Artık eşlenemeyen parça yok; mağazadaki bütün görseller model dosyasından
+geliyor. `/kiyafetcek` (oyun içi kare alma) yalnızca doğrulama aracı olarak
+duruyor.
 
 ## Ölçülmüş teknik notlar
 
@@ -166,9 +231,19 @@ yani hiçbir tile boş kalmaz.
 
 ## Kullanım
 
+Oyun içi dökümden başlayıp mağaza görsellerine kadar:
+
 ```
-python tools/render/align2.py  web/dump/male.json  tools/render/map
-python tools/render/batch.py   tools/render/map    <çıktı klasörü>
+# 1) oyunda:  /kiyafetdok        -> web/dump/male.json
+python tools/render/shopmeta.py   mp_m_freemode_01     meta/     # GTA magaza verisi
+python tools/render/align2.py     web/dump/male.json   map/      # parmak izi (dogrulama)
+python tools/render/crosscheck.py web/dump/male.json        meta/shopmeta_mp_m_freemode_01.json  map/  map_merged/    # ikisini birlestir
+python tools/render/extra_map.py                                 # shop.meta'siz 12 parca
+python tools/render/batch.py      map_final/  out/               # 512x512 render
+python tools/render/downscale.py  out/        out256/            # 256x256 tile
 ```
 
 `batch.py` var olan PNG'leri atlar, yarıda kalırsa kaldığı yerden devam eder.
+Kaynak kurulum `GTA_DIR` ile değiştirilebilir (varsayılan: Legacy).
+`fullindex.py` ise bütün arşivleri filtresiz gezip dosya envanteri çıkarır —
+"bu klasörde hangi dosyalar var" sorusunu cevaplamak için.

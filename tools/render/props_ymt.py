@@ -28,7 +28,10 @@ from collections import defaultdict
 
 import fivefury as ff
 
-GTA = r'D:\SteamLibrary\steamapps\common\Grand Theft Auto V Enhanced'
+# FiveM b3323 LEGACY GTA V uzerinde calisiyor -- kaynak da o olmali.
+GTA = os.environ.get('GTA_DIR',
+    os.path.join('D:', os.sep, 'SteamLibrary', 'steamapps', 'common',
+                 'Grand Theft Auto V'))
 DLC = os.path.join(GTA, 'update', 'x64', 'dlcpacks')
 
 ANCHOR_PREFIX = {0: 'p_head', 1: 'p_eyes', 2: 'p_ears',
@@ -118,7 +121,13 @@ def build(who='mp_m_freemode_01'):
 
     srcs = [os.path.join(GTA, 'x64%s.rpf' % c) for c in 'abcdefghijklmnopqrstuvw']
     srcs += [os.path.join(GTA, 'update', f) for f in ('update.rpf', 'update2.rpf')]
-    srcs += [os.path.join(DLC, d, 'dlc.rpf') for d in sorted(os.listdir(DLC))]
+    # Bir pakette birden fazla dlc*.rpf olabilir (mpbattle/mpheist4/
+    # mpsecurity/mptuner erkek giysilerini dlc1.rpf ve dlc2.rpf'te tutuyor).
+    import re as _re
+    for d in sorted(os.listdir(DLC)):
+        for fn in sorted(os.listdir(os.path.join(DLC, d))):
+            if _re.match(r'^dlc\d*\.rpf$', fn.lower()):
+                srcs.append(os.path.join(DLC, d, fn))
 
     for p in srcs:
         if not os.path.exists(p):

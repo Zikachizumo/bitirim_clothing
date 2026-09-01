@@ -1,16 +1,22 @@
 --[[
-    client/probe.lua — /kiyafetprob  (v2)
+    client/probe.lua — /kiyafetprob  (v3)
 
-    v1 SONUCU (2026-09-01, mp_m_freemode_01, b3788):
-      Zincir A (GetNumForcedComponents) : 12/12 ornekte 0, p3=0..3 hepsi 0 -> OLU
-      Zincir B : GetHashNameForComponent GERCEK hash donduruyor ve
-                 GetShopPedApparelVariantComponentCount 1-2 KAYIT bildiriyor
-                 -- yani VERI ORADA. Ama okuyucu native
-                 `GetShopPedApparelVariantComponentAtIndex` YOK.
+    v2 SONUCU: _G taramasi 0 fonksiyon buldu, AMA
+    GetShopPedApparelVariantComponentCount calisiyor (top 17 -> count=2).
+    Cikarim: FiveM native'leri gercek global DEGIL, __index ile istege bagli
+    cozuluyor. pairs(_G) onlari gormuyor; _G['Ad'] goruyor.
+    => Listeleyemeyiz, ISIMLE YOKLARIZ.
 
-    v2'nin isi: okuyucunun GERCEK adini bulmak. Adi tahmin etmek yerine
-    _G taranir (FiveM native'leri Lua'da global) -- boylece "hangi isimler
-    gercekten var" sorusu olculerek cevaplanir.
+    v3 iki seyi olcer:
+
+    (1) ADAY ISIMLER — okuyucu native'in gercek adi hangisi?
+
+    (2) ARGUMAN SEKLI — asil hipotez:
+        GetNumForcedComponents'a MODEL hash'i veriyoruz (v1 boyle yapti,
+        bitirim_inventory de boyle yapiyor) ve 544/544 sifir dondu.
+        Ya native model degil, GetHashNameForComponent'ten gelen APPAREL
+        COMPONENT HASH'ini bekliyorsa? Bu dogruysa hem bizim 0/544'u hem de
+        envanterin kol duzeltmesinin hic calismamasini tek basina aciklar.
 
     SADECE OKUR.
 ]]
@@ -19,52 +25,50 @@ local Constants = BitirimClothing.Constants
 local TOP  = Constants.Component.TOP
 local ARMS = Constants.Component.ARMS
 
---- v1'de gecerli hash + count > 0 dondugu dogrulanan ornekler.
+--- v1'de gecerli hash + count > 0 dondugu DOGRULANAN ornekler.
 local SAMPLES = { 17, 21, 24, 40, 100, 400, 543 }
 
----------------------------------------------------------------------------
--- 1) _G taramasi — ilgili isimleri bul
----------------------------------------------------------------------------
+--- Okuyucu olabilecek isimler. Varlik testi: _G[ad] ~= nil (bu calisiyor).
+local CANDIDATES = {
+    'GetVariantComponent',
+    'GetVariantProp',
+    'GetShopPedApparelVariantComponent',
+    'GetShopPedApparelVariantComponentAtIndex',
+    'GetShopPedApparelVariantPropAtIndex',
+    'GetShopPedApparelForcedComponentCount',
+    'GetShopPedApparelForcedComponentAtIndex',
+    'GetShopPedApparelForcedComponent',
+    'GetShopPedComponent',
+    'GetShopPedProp',
+    'GetShopPedComponentAtIndex',
+    'GetForcedComponent',
+    'GetNumForcedComponents',
+    'GetForcedComponentAtIndex',
+    'GetNumForcedPropComponents',
+    'GetShopPedQueryComponent',
+    'GetShopPedQueryComponentIndex',
+    'GetPedComponentVariationData',
+}
 
-local function scanGlobals()
-    local hits = {}
-    for k, v in pairs(_G) do
-        if type(k) == 'string' and type(v) == 'function' then
-            local lower = k:lower()
-            if lower:find('variant') or lower:find('shopped') or lower:find('forcedcomponent') then
-                hits[#hits + 1] = k
-            end
-        end
-    end
-    table.sort(hits)
-    return hits
-end
-
----------------------------------------------------------------------------
--- 2) Aday okuyucularin her birini (hash, index) ile dene
----------------------------------------------------------------------------
-
---- Bir fonksiyonun donusunu okunur metne cevir (en fazla 5 deger).
 local function fmtReturns(...)
     local n = select('#', ...)
     if n == 0 then return '(donus yok)' end
     local parts = {}
-    for i = 1, math.min(n, 5) do
+    for i = 1, math.min(n, 6) do
         parts[#parts + 1] = tostring((select(i, ...)))
     end
-    return table.concat(parts, ', ')
+    return ('%d deger: %s'):format(n, table.concat(parts, ', '))
 end
 
---- Aday okuyucu mu? Adinda variant/component gecen, count OLMAYAN fonksiyonlar.
-local function looksLikeReader(name)
-    local lower = name:lower()
-    if lower:find('count') then return false end
-    return lower:find('variant') ~= nil
+--- Bir cagriyi guvenle dene, sonucu metin olarak dondur. Ayrica donus
+--- sayisini bildirir (>1 ise ise yarar aday).
+local function tryCall(fn, ...)
+    local res = table.pack(pcall(fn, ...))
+    if not res[1] then
+        return ('^1HATA: %s^7'):format(tostring(res[2])), 0
+    end
+    return fmtReturns(table.unpack(res, 2, res.n)), res.n - 1
 end
-
----------------------------------------------------------------------------
--- Komut
----------------------------------------------------------------------------
 
 RegisterCommand('kiyafetprob', function()
     local ok = lib.callback.await('bitirim_clothing:hasDevPermission', false)
@@ -73,78 +77,91 @@ RegisterCommand('kiyafetprob', function()
         return
     end
 
-    local ped = PlayerPedId()
+    local ped   = PlayerPedId()
+    local model = GetEntityModel(ped)
 
-    print('^2============ NATIVE PROB v2 ============^7')
+    print('^2============ NATIVE PROB v3 ============^7')
 
-    -- 1) Gercekte hangi isimler var?
-    local names = scanGlobals()
-    print(('^2--- _G icinde variant/shopped/forcedcomponent gecen %d fonksiyon ---^7'):format(#names))
-    for _, n in ipairs(names) do
-        print('  ' .. n)
-    end
-
-    -- 2) Ornek bir hash al (v1'de calistigi dogrulanan bir ust giysiden).
-    local sampleHash
+    -- Ornek hash al
+    local sampleDrawable, sampleHash, sampleCount
     for _, d in ipairs(SAMPLES) do
         local okH, h = pcall(GetHashNameForComponent, ped, TOP, d, 0)
         if okH and h and h ~= 0 then
             local okC, c = pcall(GetShopPedApparelVariantComponentCount, h)
             if okC and type(c) == 'number' and c > 0 then
-                sampleHash = h
-                print('')
-                print(('^2ornek: top %d  hash=%s  count=%d^7'):format(d, tostring(h), c))
+                sampleDrawable, sampleHash, sampleCount = d, h, c
                 break
             end
         end
     end
 
     if not sampleHash then
-        print('^1Gecerli hash+count bulunamadi -- v1 sonucuyla celisiyor, tekrar bak.^7')
+        print('^1Gecerli hash bulunamadi -- v1 ile celisiyor.^7')
         return
     end
+    print(('^2ornek: top %d  hash=%s  count=%d^7'):format(sampleDrawable, tostring(sampleHash), sampleCount))
 
-    -- 3) Aday okuyuculari sirayla dene.
+    ---------------------------------------------------------------------
+    -- 1) HIPOTEZ: forced-component native'leri MODEL degil HASH bekliyor
+    ---------------------------------------------------------------------
     print('')
-    print('^2--- aday okuyucular (hash, 0) ile cagriliyor ---^7')
-    local worked = {}
-    for _, n in ipairs(names) do
-        if looksLikeReader(n) then
-            local res = table.pack(pcall(_G[n], sampleHash, 0))
-            if res[1] then
-                local text = fmtReturns(table.unpack(res, 2, res.n))
-                print(('  ^2%-46s -> %s^7'):format(n, text))
-                if res.n > 2 then worked[#worked + 1] = n end
-            else
-                print(('  ^1%-46s -> HATA: %s^7'):format(n, tostring(res[2])))
-            end
+    print('^2--- 1) GetNumForcedComponents: model mi, apparel hash mi? ---^7')
+    local t
+    t = tryCall(GetNumForcedComponents, model)                     print(('  (model)              -> %s'):format(t))
+    t = tryCall(GetNumForcedComponents, sampleHash)                print(('  ^3(apparel hash)       -> %s^7'):format(t))
+    t = tryCall(GetNumForcedComponents, sampleHash, 0)             print(('  (hash, 0)            -> %s'):format(t))
+    t = tryCall(GetNumForcedComponents, sampleHash, TOP, sampleDrawable, 0)
+    print(('  (hash, 11, d, 0)     -> %s'):format(t))
+
+    print('')
+    print('^2--- GetForcedComponent arguman sekilleri ---^7')
+    t = tryCall(GetForcedComponent, sampleHash, 0)                 print(('  ^3(hash, 0)            -> %s^7'):format(t))
+    t = tryCall(GetForcedComponent, sampleHash, TOP)               print(('  (hash, 11)           -> %s'):format(t))
+    t = tryCall(GetForcedComponent, model, TOP, sampleDrawable, 0) print(('  (model, 11, d, 0)    -> %s'):format(t))
+
+    ---------------------------------------------------------------------
+    -- 2) ADAY OKUYUCU ISIMLERI
+    ---------------------------------------------------------------------
+    print('')
+    print('^2--- 2) aday isimler: var mi + (hash, 0) cagrisi ---^7')
+    local best, bestN = nil, 1
+    for _, name in ipairs(CANDIDATES) do
+        local fn = _G[name]
+        if fn == nil then
+            print(('  ^1%-44s YOK^7'):format(name))
+        else
+            local text, n = tryCall(fn, sampleHash, 0)
+            print(('  ^2%-44s^7 -> %s'):format(name, text))
+            if n > bestN then best, bestN = name, n end
         end
     end
 
-    -- 4) Ise yarayan okuyucuyla butun ornekleri coz.
-    if #worked == 0 then
+    ---------------------------------------------------------------------
+    -- 3) En cok deger donduren okuyucuyla butun ornekleri coz
+    ---------------------------------------------------------------------
+    if not best then
         print('')
-        print('^1Hicbir aday okuyucu birden fazla deger dondurmedi.^7')
-        print('^3Yukaridaki _G listesini bana yapistir -- dogru adi oradan secerim.^7')
+        print('^1Hicbir aday birden fazla deger dondurmedi.^7')
+        print('^3Yukaridaki tablonun tamamini yapistir.^7')
         return
     end
 
-    local reader = worked[1]
     print('')
-    print(('^2--- "%s" ile ornekler cozuluyor ---^7'):format(reader))
-    local armsHits = 0
+    print(('^2--- 3) "%s" ile ornekler (%d deger donduruyor) ---^7'):format(best, bestN))
+    local reader = _G[best]
+    local hits = 0
     for _, d in ipairs(SAMPLES) do
         local okH, h = pcall(GetHashNameForComponent, ped, TOP, d, 0)
         if okH and h and h ~= 0 then
             local okC, c = pcall(GetShopPedApparelVariantComponentCount, h)
             if okC and type(c) == 'number' and c > 0 then
-                local line, arms = {}, nil
+                local parts, arms = {}, nil
                 for i = 0, c - 1 do
-                    local r = table.pack(pcall(_G[reader], h, i))
+                    local r = table.pack(pcall(reader, h, i))
                     if r[1] then
-                        -- Donus sirasi bilinmiyor; HEPSINI bas ki desen gorulsun.
-                        line[#line + 1] = '{' .. fmtReturns(table.unpack(r, 2, r.n)) .. '}'
-                        -- componentType == 3 (ARMS) aranan deger.
+                        parts[#parts + 1] = '{' .. fmtReturns(table.unpack(r, 2, r.n)) .. '}'
+                        -- ARMS(3) hangi konumda cikiyor bilmiyoruz: komsu
+                        -- sayiyi aday kol drawable'i say, ham cikti zaten basili.
                         for k = 2, r.n do
                             if r[k] == ARMS and type(r[k - 1]) == 'number' then
                                 arms = arms or r[k - 1]
@@ -152,14 +169,13 @@ RegisterCommand('kiyafetprob', function()
                         end
                     end
                 end
-                if arms then armsHits = armsHits + 1 end
-                print(('  top %-4d %s%s'):format(d, table.concat(line, ' '),
+                if arms then hits = hits + 1 end
+                print(('  top %-4d %s%s'):format(d, table.concat(parts, ' '),
                     arms and ('  ^2-> KOL=%d^7'):format(arms) or ''))
             end
         end
     end
-
     print('')
-    print(('^2kol cevabi veren ornek: %d/%d^7'):format(armsHits, #SAMPLES))
+    print(('^2kol cevabi veren ornek: %d/%d^7'):format(hits, #SAMPLES))
     print('^2========================================^7')
 end, false)

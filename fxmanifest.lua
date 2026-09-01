@@ -48,11 +48,13 @@ client_scripts {
     'client/coverage.lua',
     'client/hidden.lua',
     'client/probe.lua',
+    'client/capture.lua',
 }
 
 server_scripts {
     '@oxmysql/lib/MySQL.lua',
     'server/main.lua',
+    'server/capture.lua',
 }
 
 ui_page 'web/index.html'

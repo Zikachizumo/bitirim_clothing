@@ -41,7 +41,7 @@ bağlı kalmasınlar diye repoya işlendi.
 
 - Kalan 48 boşluk parçasının `/kiyafetbosluk` ile gözden geçirilmesi
 - Kadın `DefaultArms` ve kadın kol blacklist'i hiç ölçülmedi
-- Thumbnail üretimi (katalog taraması yapıldı)
+- Thumbnail üretimi — araç hazır (`/kiyafetcek`), henüz çalıştırılmadı
 - Kamera çerçeveleme değerlerinin oyunda ölçülmesi (`/kiyafetkamera`)
 
 ## Komutlar
@@ -53,6 +53,8 @@ bağlı kalmasınlar diye repoya işlendi.
 | `/kiyafetprob` | Hangi native zincirinin gerçekten veri döndürdüğünü **ölçer**. Katman 1 sıfır çektikten sonra eklendi. |
 | `/kiyafetbosluk` | Kol verisi olmayan üstleri tek tek giyip gözden geçirir; bozuk olanı katalogdan çıkarır. |
 | `/kiyafetgizli` | Gizlenen parçaları listeler. |
+| `/kiyafetcek [kategori] [başlangıç]` | Grid için thumbnail PNG'lerini toplu üretir. Kategori verilmezse hepsi. |
+| `/kiyafetcekdur` | Üretimi durdurur. |
 | `/kiyafetkamera <head\|torso\|legs\|feet> <z> <mesafe> [pitch]` | Önizleme kamerasını canlı ayarlar. Beğenilen değerler `client/preview.lua` içine geçirilir. |
 
 İlk ikisi `bitirim_clothing.dev` ACE yetkisi ister. Yetki **server'da** sorulur —
@@ -74,5 +76,5 @@ txAdmin live console'dan canlı `add_ace ...` çalıştır veya tam restart yap.
 4. `refresh` sonra `restart bitirim_clothing` — **bu sıra zorunlu**, tek başına
    restart eski paketlenmiş cache'i kullanabiliyor.
 
-Thumbnail PNG'leri henüz üretilmedi; dosya yoksa NUI tile'da drawable
+Thumbnail üretimi için `/kiyafetcek` (bkz. Komutlar). Dosya yoksa NUI tile'da drawable
 numarasını gösterir, kırılmaz.

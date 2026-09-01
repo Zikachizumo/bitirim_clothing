@@ -127,26 +127,44 @@ end
 
 --[[
     Oyun, her ust giysi icin hangi kolun zorunlu oldugunu kendi verisinde
-    tutuyor. bitirim_inventory'de (modules/bitirim/equipment_client.lua)
-    ayni cift uretimde calisiyor.
+    tutuyor. Dogru zincir OLCULEREK bulundu (/kiyafetprob v3, 2026-09-01):
 
-    GetForcedComponent uc deger dondurur: nameHash, enumValue (drawable),
-    componentType. Native'lerin varligi kontrol edilir ve pcall ile sarilir --
-    FiveM surumune gore yok olabilirler.
+      hash  = GetHashNameForComponent(ped, 11, drawable, texture)
+      count = GetNumForcedComponents(hash)          --> or. top 17 icin 2
+      GetForcedComponent(hash, i)                    --> nameHash, enumValue, componentType
+                                                         componentType == 3 ise enumValue = KOL drawable'i
+
+    KRITIK: GetNumForcedComponents MODEL hash'ini DEGIL, apparel component
+    hash'ini bekliyor. Model verilince 0 donduruyor (sessizce, hata vermeden)
+    -- 544/544 sifir kapsam bundandi. Olculen kanit:
+        (model)        -> 0
+        (apparel hash) -> 2
+    AYNI HATA bitirim_inventory/modules/bitirim/equipment_client.lua:71'de de
+    var; oranin kol duzeltmesi de bu yuzden hic calismamis olmali.
+
+    GetVariantComponent BENZER ama BASKA veridir (componentType 8/9/11 =
+    undershirt/yelek/ust) -- kol vermez, karistirma.
 ]]
-local function fromGameData(model, gender, topDrawable)
-    if not GetNumForcedComponents or not GetForcedComponent then return nil end
+local function fromGameData(ped, gender, topDrawable, topTexture)
+    if not GetHashNameForComponent or not GetNumForcedComponents or not GetForcedComponent then
+        return nil
+    end
 
-    local ok, count = pcall(GetNumForcedComponents, model, TOP, topDrawable, 0)
-    if not ok or type(count) ~= 'number' or count <= 0 then return nil end
+    -- Hash texture'a da bagli: ayni drawable'in farkli renginin zorunlu kolu
+    -- farkli olabilir.
+    local okH, hash = pcall(GetHashNameForComponent, ped, TOP, topDrawable, topTexture or 0)
+    if not okH or not hash or hash == 0 then return nil end
+
+    local okC, count = pcall(GetNumForcedComponents, hash)
+    if not okC or type(count) ~= 'number' or count <= 0 then return nil end
 
     -- Blacklist katman 1'i de suzsun mu? (Config.BlacklistFiltersGameData)
     local filter = Config.BlacklistFiltersGameData
     if filter == nil then filter = true end
 
     for i = 0, count - 1 do
-        local ok2, _, enumValue, componentType = pcall(GetForcedComponent, model, TOP, topDrawable, i)
-        if ok2 and componentType == ARMS and type(enumValue) == 'number' and enumValue >= 0 then
+        local okF, _, enumValue, componentType = pcall(GetForcedComponent, hash, i)
+        if okF and componentType == ARMS and type(enumValue) == 'number' and enumValue >= 0 then
             if not (filter and Compat.isBlacklisted(gender, enumValue)) then
                 return enumValue
             end
@@ -167,10 +185,9 @@ end
 ]]
 function Compat.resolveArms(ped, topDrawable, topTexture)
     local gender = Constants.genderKey(ped)
-    local model  = GetEntityModel(ped)
     topTexture = topTexture or 0
 
-    local fromGame = fromGameData(model, gender, topDrawable)
+    local fromGame = fromGameData(ped, gender, topDrawable, topTexture)
     if fromGame and not isRejected(topDrawable, topTexture, fromGame) then
         return fromGame, 'game'
     end

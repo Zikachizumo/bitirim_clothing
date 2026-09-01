@@ -1,7 +1,7 @@
 --[[
     client/coverage.lua — OLCUM KOMUTLARI (developer araci)
 
-    /kiyafetkapsam  Katman 1'in (oyunun kendi zorunlu-bilesen verisi) kac ust
+    /kiyafetkapsam  Her ust giysinin kolunun HANGI KATMANDAN cozuldugunu sayar.
                     giysiyi kapsadigini olcer. Bu sayi, elle gorsel taramaya
                     devam etmeye deger mi sorusunu cevaplar.
     /kiyafetsay     Katalog taramasinin kategori basina kac parca buldugunu yazar.
@@ -18,7 +18,6 @@ local Catalog   = BitirimClothing.Catalog
 local Compat    = BitirimClothing.Compat
 
 local TOP  = Constants.Component.TOP
-local ARMS = Constants.Component.ARMS
 
 local function allowed()
     local ok = lib.callback.await('bitirim_clothing:hasDevPermission', false)
@@ -36,14 +35,7 @@ RegisterCommand('kiyafetkapsam', function()
     if not allowed() then return end
 
     local ped    = PlayerPedId()
-    local model  = GetEntityModel(ped)
     local gender = Constants.genderKey(ped)
-
-    if not GetNumForcedComponents or not GetForcedComponent then
-        print('^1[bitirim_clothing] GetNumForcedComponents/GetForcedComponent bu FiveM surumunde YOK.^7')
-        print('^1Katman 1 kullanilamaz -- katman 2 (DB) ve 4 (varsayilan) ile sinirlisin.^7')
-        return
-    end
 
     local topCount = GetNumberOfPedDrawableVariations(ped, TOP) or 0
     if topCount <= 0 then
@@ -51,57 +43,37 @@ RegisterCommand('kiyafetkapsam', function()
         return
     end
 
-    local withGameData, blacklistedAnswer, viaDb, uncovered = 0, 0, 0, 0
+    --[[
+        Katman mantigi BURADA TEKRARLANMAZ -- dogrudan Compat.resolveArms
+        cagrilir ve donen kaynak etiketine gore sayilir. Boylece olcum ile
+        magazanin gercek davranisi asla ayrisamaz.
+    ]]
+    local n = { game = 0, db = 0, default = 0, none = 0 }
     local gaps = {}
 
     for d = 0, topCount - 1 do
-        local rawAnswer, cleanAnswer = nil, nil
-
-        local ok, count = pcall(GetNumForcedComponents, model, TOP, d, 0)
-        if ok and type(count) == 'number' and count > 0 then
-            for i = 0, count - 1 do
-                local ok2, _, enumValue, componentType = pcall(GetForcedComponent, model, TOP, d, i)
-                if ok2 and componentType == ARMS and type(enumValue) == 'number' and enumValue >= 0 then
-                    rawAnswer = enumValue
-                    if not Compat.isBlacklisted(gender, enumValue) then
-                        cleanAnswer = enumValue
-                        break
-                    end
-                end
-            end
-        end
-
-        if cleanAnswer then
-            withGameData = withGameData + 1
-        else
-            if rawAnswer then blacklistedAnswer = blacklistedAnswer + 1 end
-            -- Oyun cevap vermedi (veya cevabi blacklist'te): DB'ye bakiliyor.
-            local arms, source = Compat.resolveArms(ped, d, 0)
-            if arms and source == 'db' then
-                viaDb = viaDb + 1
-            else
-                uncovered = uncovered + 1
-                if #gaps < 40 then gaps[#gaps + 1] = d end
-            end
+        local _, source = Compat.resolveArms(ped, d, 0)
+        local key = source or 'none'
+        n[key] = (n[key] or 0) + 1
+        if key == 'default' or key == 'none' then
+            if #gaps < 40 then gaps[#gaps + 1] = d end
         end
     end
 
-    local pct = function(n) return topCount > 0 and (n / topCount * 100.0) or 0.0 end
+    local pct = function(v) return topCount > 0 and (v / topCount * 100.0) or 0.0 end
 
     print('^2================ KIYAFET KAPSAM OLCUMU ================^7')
     print(('cinsiyet            : %s'):format(gender))
     print(('taranan ust giysi   : %d'):format(topCount))
-    print(('^2katman 1 (oyun)     : %d  (%%%.1f)^7'):format(withGameData, pct(withGameData)))
-    print(('   -> cevap blacklistte: %d'):format(blacklistedAnswer))
-    print(('^3katman 2 (DB)       : %d  (%%%.1f)^7'):format(viaDb, pct(viaDb)))
-    print(('^1kapsanmayan         : %d  (%%%.1f)^7'):format(uncovered, pct(uncovered)))
-    print(('toplam kapsam       : %%%.1f'):format(pct(withGameData + viaDb)))
+    print(('^2katman 1 (oyun)     : %d  (%%%.1f)^7'):format(n.game, pct(n.game)))
+    print(('^3katman 2 (DB)       : %d  (%%%.1f)^7'):format(n.db, pct(n.db)))
+    print(('^1katman 4 (varsayilan): %d  (%%%.1f)^7'):format(n.default, pct(n.default)))
+    print(('^1kola hic dokunulmaz : %d  (%%%.1f)^7'):format(n.none, pct(n.none)))
+    print(('gercek kapsam (1+2) : %%%.1f'):format(pct(n.game + n.db)))
     if #gaps > 0 then
         print(('kapsanmayan ilk %d ust: %s'):format(#gaps, table.concat(gaps, ', ')))
     end
     print('^2======================================================^7')
-    print('Not: "kapsanmayan" olanlar Config.DefaultArms ile giyilir.')
-    print('Bu sayi dusukse elle tarama GEREKSIZ; yuksekse sadece bu listedekiler taranir.')
 end, false)
 
 ---------------------------------------------------------------------------

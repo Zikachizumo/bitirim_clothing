@@ -39,7 +39,7 @@ bağlı kalmasınlar diye repoya işlendi.
 
 ### Bekleyen
 
-- ⚠️ **Katman 1 ölçüldü: %0 kapsam.** Üst giysilerin %98'i DefaultArms'a düşüyor — ten/mesh sorunu ÇÖZÜLMÜŞ DEĞİL. Doğru native zinciri `/kiyafetprob` ile aranıyor.
+- Katman 1 **düzeltildi** (model→apparel hash); yeni kapsam `/kiyafetkapsam` ile ölçülecek
 - Kadın `DefaultArms` ve kadın kol blacklist'i hiç ölçülmedi
 - Thumbnail üretimi (katalog taraması yapıldı)
 - Kamera çerçeveleme değerlerinin oyunda ölçülmesi (`/kiyafetkamera`)
@@ -48,7 +48,7 @@ bağlı kalmasınlar diye repoya işlendi.
 
 | Komut | Ne yapar |
 |---|---|
-| `/kiyafetkapsam` | Katman 1'in (oyunun kendi verisi) kaç üst giysiyi kapsadığını **ölçer**. Elle taramaya devam edilip edilmeyeceğini bu belirler. |
+| `/kiyafetkapsam` | Her üst giysinin kolunun **hangi katmandan** çözüldüğünü sayar (oyun / DB / varsayılan). |
 | `/kiyafetsay` | Katalog taramasının kategori başına kaç parça bulduğunu yazar. |
 | `/kiyafetprob` | Hangi native zincirinin gerçekten veri döndürdüğünü **ölçer**. Katman 1 sıfır çektikten sonra eklendi. |
 | `/kiyafetkamera <head\|torso\|legs\|feet> <z> <mesafe> [pitch]` | Önizleme kamerasını canlı ayarlar. Beğenilen değerler `client/preview.lua` içine geçirilir. |

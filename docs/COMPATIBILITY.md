@@ -100,47 +100,57 @@ Hiçbir katman cevap vermezse `Config.DefaultArms`:
 `male = 135` (oyunda ölçüldü, **eldivenli** bir parça),
 `female = -1` (**ölçülmedi** → kola hiç dokunma).
 
-## ÖLÇÜM SONUCU (2026-09-01) — katman 1 çalışmıyor
+## Katman 1 hata ayıklaması (2026-09-01) — model ≠ apparel hash
 
-`/kiyafetkapsam`, `mp_m_freemode_01`, FiveM b3788, GTA V Enhanced:
+İlk ölçüm **%0 kapsam** verdi: 544 üst giysinin hiçbirinde
+`GetNumForcedComponents` cevap vermedi. Sebep verinin yokluğu değildi —
+**native'e yanlış anahtar veriliyordu.**
+
+`/kiyafetprob` ile ölçülen kanıt:
 
 ```
-taranan üst giysi : 544
-katman 1 (oyun)   :   0   (%0.0)   <-- hiç cevap vermiyor
-katman 2 (DB)     :  11   (%2.0)
-kapsanmayan       : 533   (%98.0)
+GetNumForcedComponents(model)         -> 0     ← eski çağrı
+GetNumForcedComponents(apparelHash)   -> 2     ← doğrusu
+GetForcedComponent(apparelHash, 0)    -> 1849449579, 5, 3
+                                          nameHash, enumValue=5, componentType=3 (ARMS)
 ```
 
-**Katman 1 bu sunucuda veri döndürmüyor.** `GetNumForcedComponents` /
-`GetForcedComponent` çifti freemode ped'ler için 544 üst giysinin hiçbirinde
-sonuç vermedi — blacklist yüzünden elenen bir cevap da yok (o sayaç da 0).
+Native, ped'in **model hash'ini değil**, `GetHashNameForComponent`'ten gelen
+**apparel component hash'ini** bekliyor. Model verilince hata vermiyor, sessizce
+`0` dönüyor — bu yüzden fark edilmesi zordu.
 
-Sonuç: üst giysilerin **%98'i `Config.DefaultArms` (erkek 135) ile giyiliyor**.
-Bu tek bir eldivenli kol; her üst giysiyle uyumlu olması beklenemez. **Ten
-taşması / şeffaf mesh sorunu bu haliyle çözülmüş değildir.**
+### Doğru zincir
 
-Bu çift `bitirim_inventory`'de de aynı şekilde kullanılıyor
-(`equipment_client.lua:71`) — orada da sessizce `nil` dönüyor olması çok
-muhtemel; envanterin `defaultArms` değerine düşme davranışı bunu maskeliyor.
+```lua
+local hash  = GetHashNameForComponent(ped, 11, drawable, texture)
+local count = GetNumForcedComponents(hash)
+for i = 0, count - 1 do
+    local nameHash, enumValue, componentType = GetForcedComponent(hash, i)
+    -- componentType == 3 ise enumValue = zorunlu KOL drawable'i
+end
+```
 
-### Neden elle tarama cevap değil
+Hash **texture'a da bağlı**: aynı drawable'ın farklı renginin zorunlu kolu
+farklı olabilir. Layer 1 bu yüzden texture'ı da geçiriyor.
 
-533 açıkta kalan üst giysi × ~214 kol adayı = ~114.000 görsel karar.
-11 üst giysi için 2613 satır tutmuştu. Bu yol kapalı.
+### Karıştırılmaması gereken native
 
-### Sıradaki adım: doğru native zincirini ÖLÇ
+`GetVariantComponent(hash, i)` de üç değer döndürür ama **başka veridir** —
+ölçümde `componentType` 8/9/11 (undershirt / yelek / üst) çıktı, kol vermez.
 
-`/kiyafetprob` her aday zincir için üç şeyi ayrı raporlar: native gerçekten
-var mı, çağrılınca patlıyor mu, sıfırdan büyük sonuç dönüyor mu.
+### Aynı hata bitirim_inventory'de de var
 
-| Zincir | Yol |
-|---|---|
-| A | `GetNumForcedComponents(model, 11, drawable, p3)` — `p3 = 0..3` varyasyonları |
-| B | `GetHashNameForComponent` → `GetShopPedApparelVariantComponentCount` → `...AtIndex`; `componentType == 3` olan kayıt kol cevabıdır |
+`bitirim_inventory/modules/bitirim/equipment_client.lua:71` aynı çağrıyı model
+hash'iyle yapıyor. Yani envanterin "üst giyilince doğru kolu otomatik uygula"
+özelliği de hiç çalışmamış olmalı; `defaultArms`'a düşme davranışı bunu
+maskeliyor.
 
-Örnek üst giysiler aralık boyunca yayıldı; **14..24 kontrol grubudur** — DB o
-aralığı biliyor, doğru zincir orada kesinlikle cevap vermeli. Bir zincir
-kontrol grubunda cevap veriyorsa katman 1 o zincirle yeniden yazılır.
+### Kapsanmayacak olanlar
+
+Düşük drawable'lar (0, 1, 5, 14) için `GetHashNameForComponent` `0` döndürüyor —
+bunlar mağaza kataloğuna ait olmayan taban parçalar. Onlarda katman 1 yine
+sessiz kalır, katman 2/4 devreye girer. Yeni kapsam `/kiyafetkapsam` ile
+ölçülecek; **buraya sayı yazılmadan önce ölçülecek.**
 
 ## Kurulum / deploy
 

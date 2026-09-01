@@ -41,5 +41,35 @@ bağlı kalmasınlar diye repoya işlendi.
 
 - Katman 1 (`GetNumForcedComponents`) kapsam ölçümü — bkz. COMPATIBILITY.md
 - Kadın `DefaultArms` ve kadın kol blacklist'i hiç ölçülmedi
-- Katalog tarama + thumbnail üretimi
-- NUI
+- Thumbnail üretimi (katalog taraması yapıldı)
+- Kamera çerçeveleme değerlerinin oyunda ölçülmesi (`/kiyafetkamera`)
+
+## Komutlar
+
+| Komut | Ne yapar |
+|---|---|
+| `/kiyafetkapsam` | Katman 1'in (oyunun kendi verisi) kaç üst giysiyi kapsadığını **ölçer**. Elle taramaya devam edilip edilmeyeceğini bu belirler. |
+| `/kiyafetsay` | Katalog taramasının kategori başına kaç parça bulduğunu yazar. |
+| `/kiyafetkamera <head\|torso\|legs\|feet> <z> <mesafe> [pitch]` | Önizleme kamerasını canlı ayarlar. Beğenilen değerler `client/preview.lua` içine geçirilir. |
+
+İlk ikisi `bitirim_clothing.dev` ACE yetkisi ister. Yetki **server'da** sorulur —
+`IsPlayerAceAllowed` client'ta yoktur.
+
+```
+add_ace group.admin bitirim_clothing.dev allow
+```
+
+Bu satır `server.cfg`'ye eklenirse **çalışan sürece otomatik yüklenmez**;
+txAdmin live console'dan canlı `add_ace ...` çalıştır veya tam restart yap.
+
+## Kurulum
+
+1. Uyumluluk tablosunu içeri aktar (zaten sunucuda varsa atla):
+   `mysql -ufivem fivem < data/compatibility_rules.sql`
+2. Kaynağı `resources/[bitirim]/bitirim_clothing/` altına koy.
+3. ACE yetkisini ver (yukarıdaki satır).
+4. `refresh` sonra `restart bitirim_clothing` — **bu sıra zorunlu**, tek başına
+   restart eski paketlenmiş cache'i kullanabiliyor.
+
+Thumbnail PNG'leri henüz üretilmedi; dosya yoksa NUI tile'da drawable
+numarasını gösterir, kırılmaz.

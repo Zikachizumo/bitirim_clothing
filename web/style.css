@@ -1,0 +1,447 @@
+/*
+    bitirim_clothing NUI — referans gorsellere gore.
+
+    ILKE: sadece SOL panel ve alt/kose parcalari cizilir. Ekranin geri kalani
+    TAMAMEN saydam kalmali -- oyuncu 3D karakterini net gormeli.
+*/
+
+:root {
+    --panel-bg:      rgba(18, 18, 20, 0.94);
+    --panel-w:       28.6vw;
+    --row-line:      rgba(255, 255, 255, 0.07);
+    --row-hover:     rgba(255, 255, 255, 0.06);
+    --row-active:    rgba(255, 255, 255, 0.11);
+    --text:          #f2f2f3;
+    --text-dim:      #9a9a9f;
+    --text-faint:    #6e6e74;
+    --tile-bg:       rgba(255, 255, 255, 0.045);
+    --tile-edge:     rgba(255, 255, 255, 0.10);
+    --tile-sel:      #ffffff;
+    --accent:        #ffffff;
+    --radius:        4px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: transparent;
+    font-family: 'Segoe UI', 'Inter', system-ui, sans-serif;
+    color: var(--text);
+    user-select: none;
+}
+
+.hidden { display: none !important; }
+
+#app { position: fixed; inset: 0; }
+
+/* ---------------------------------------------------------------- panel */
+
+.panel {
+    position: absolute;
+    top: 0; left: 0; bottom: 0;
+    width: var(--panel-w);
+    background: var(--panel-bg);
+    display: flex;
+    flex-direction: column;
+}
+
+.view { display: flex; flex-direction: column; height: 100%; overflow: hidden; }
+
+.panel-head { padding: 52px 0 34px 42px; }
+
+.panel-head h1 {
+    font-size: 42px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    line-height: 1;
+}
+
+.panel-head h2 {
+    font-size: 31px;
+    font-weight: 300;
+    letter-spacing: 7px;
+    color: var(--text-dim);
+    margin-top: 6px;
+}
+
+/* ------------------------------------------------------- kategori listesi */
+
+.category-list {
+    border-top: 1px solid var(--row-line);
+    margin: 0 22px;
+}
+
+.cat-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 61px;
+    padding: 0 20px;
+    border-bottom: 1px solid var(--row-line);
+    font-size: 15px;
+    letter-spacing: 1.6px;
+    cursor: pointer;
+    background: var(--row-hover);
+    transition: background 120ms ease;
+}
+
+.cat-row:hover { background: var(--row-active); }
+
+.cat-row .ico { opacity: 0.75; display: flex; }
+.cat-row .ico svg { width: 26px; height: 26px; }
+
+/* ------------------------------------------------------ kategori basligi */
+
+.cat-head {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 26px 30px 22px 30px;
+}
+
+.icon-btn {
+    width: 42px; height: 42px;
+    border: none;
+    border-radius: var(--radius);
+    background: var(--row-active);
+    color: var(--text);
+    font-size: 19px;
+    cursor: pointer;
+}
+.icon-btn:hover { background: rgba(255,255,255,0.18); }
+
+.cat-title {
+    margin-left: auto;
+    font-size: 15px;
+    letter-spacing: 1.6px;
+}
+
+.cat-icon { display: flex; opacity: 0.75; }
+.cat-icon svg { width: 26px; height: 26px; }
+
+/* ------------------------------------------------------------------ grid */
+
+.grid {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+    padding: 0 30px 92px 30px;   /* alt bosluk: TURN CHARACTER ipucuyla cakismasin */
+    overflow-y: auto;
+    align-content: start;
+    /* Satirlar icerige gore boyutlansin: bunsuz grid yuksekligi sabit kalip
+       satirlar ust uste biniyor (scrollHeight clientHeighte esitleniyor). */
+    grid-auto-rows: max-content;
+}
+
+.grid::-webkit-scrollbar { width: 5px; }
+.grid::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.16); border-radius: 3px; }
+
+.tile {
+    position: relative;
+    aspect-ratio: 1 / 1.12;
+    background: var(--tile-bg);
+    border: 1px solid transparent;
+    border-radius: var(--radius);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.tile:hover { border-color: var(--tile-edge); }
+.tile.selected { border-color: var(--tile-sel); }
+
+.tile .thumb {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 19px;
+    font-weight: 600;
+    color: var(--text-faint);
+}
+
+.tile .thumb img { width: 100%; height: 100%; object-fit: contain; }
+
+.tile .cap {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 6px;
+    font-size: 10px;
+    color: var(--text-dim);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.tile .cap .caret { font-size: 8px; opacity: 0.8; }
+
+/* Renk varyanti seridi */
+.swatches {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    padding: 8px 2px 12px 2px;
+}
+
+.swatch {
+    width: 26px; height: 26px;
+    border-radius: var(--radius);
+    background: var(--tile-bg);
+    border: 1px solid var(--tile-edge);
+    color: var(--text-dim);
+    font-size: 10px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+}
+.swatch:hover { border-color: rgba(255,255,255,0.35); }
+.swatch.selected { border-color: var(--tile-sel); color: var(--text); }
+
+/* ------------------------------------------------------------- parca karti */
+
+.item-card {
+    position: absolute;
+    left: calc(var(--panel-w) + (100vw - var(--panel-w)) / 2);
+    transform: translateX(-50%);
+    bottom: 42px;
+    text-align: center;
+    pointer-events: auto;
+}
+
+.item-name {
+    font-size: 30px;
+    font-weight: 400;
+    text-shadow: 0 2px 12px rgba(0,0,0,0.85);
+}
+
+.item-crumb {
+    font-size: 11px;
+    letter-spacing: 1.4px;
+    color: var(--text-dim);
+    margin-top: 4px;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.85);
+}
+
+.item-actions {
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 22px;
+}
+
+.stepper {
+    display: flex;
+    align-items: center;
+    background: rgba(20,20,22,0.9);
+    border-radius: var(--radius);
+    overflow: hidden;
+}
+
+.qty-btn {
+    width: 40px; height: 46px;
+    border: none;
+    background: transparent;
+    color: var(--text);
+    font-size: 19px;
+    cursor: pointer;
+}
+.qty-btn:hover { background: rgba(255,255,255,0.10); }
+
+#qty { min-width: 34px; text-align: center; font-size: 16px; }
+
+.add-cart {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    height: 46px;
+    padding: 0 22px;
+    border: none;
+    border-radius: var(--radius);
+    background: #ffffff;
+    color: #101012;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 1.1px;
+    cursor: pointer;
+}
+.add-cart:hover { background: #e7e7ea; }
+.add-cart .plus { font-size: 17px; font-weight: 400; }
+.add-cart .price { font-weight: 700; }
+
+/* ---------------------------------------------------------------- kapat */
+
+.close-btn {
+    position: absolute;
+    top: 24px; right: 26px;
+    display: flex; align-items: center; gap: 9px;
+    border: none;
+    background: transparent;
+    color: var(--text);
+    font-size: 13px;
+    letter-spacing: 1.4px;
+    cursor: pointer;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.85);
+}
+
+.close-btn kbd {
+    font-family: inherit;
+    font-size: 11px;
+    padding: 4px 8px;
+    border-radius: var(--radius);
+    background: rgba(255,255,255,0.14);
+}
+
+/* ------------------------------------------------------------ turn hint */
+
+.turn-hint {
+    position: absolute;
+    left: 26px; bottom: 26px;
+    display: flex; align-items: center; gap: 12px;
+    color: var(--text);
+    font-size: 11px;
+    letter-spacing: 1.3px;
+    line-height: 1.35;
+}
+
+.mouse {
+    width: 15px; height: 22px;
+    border: 1.5px solid var(--text);
+    border-radius: 8px;
+    position: relative;
+    opacity: 0.9;
+}
+.mouse::after {
+    content: '';
+    position: absolute;
+    top: 4px; left: 50%;
+    transform: translateX(-50%);
+    width: 1.5px; height: 5px;
+    background: var(--text);
+}
+
+/* ----------------------------------------------------------------- sepet */
+
+.cart-area {
+    position: absolute;
+    right: 26px; bottom: 26px;
+    display: flex; align-items: center; gap: 14px;
+}
+
+.cart-text {
+    max-width: 250px;
+    text-align: right;
+    font-size: 11px;
+    letter-spacing: 1.2px;
+    color: var(--text-dim);
+    text-shadow: 0 2px 8px rgba(0,0,0,0.85);
+}
+
+.cart-btn {
+    position: relative;
+    width: 42px; height: 42px;
+    border: none; background: transparent;
+    cursor: pointer;
+}
+
+.cart-icon {
+    display: block;
+    width: 26px; height: 24px;
+    margin: 0 auto;
+    border: 2px solid var(--text);
+    border-top: none;
+    border-radius: 0 0 5px 5px;
+    position: relative;
+    opacity: 0.92;
+}
+.cart-icon::before {
+    content: '';
+    position: absolute;
+    top: -9px; left: 4px;
+    width: 14px; height: 10px;
+    border: 2px solid var(--text);
+    border-bottom: none;
+    border-radius: 7px 7px 0 0;
+}
+
+.cart-count {
+    position: absolute;
+    top: -2px; right: -2px;
+    min-width: 18px; height: 18px;
+    border-radius: 9px;
+    background: #ffffff;
+    color: #101012;
+    font-size: 11px;
+    font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+}
+
+.cart-panel {
+    position: absolute;
+    right: 26px; bottom: 84px;
+    width: 320px;
+    background: var(--panel-bg);
+    border-radius: var(--radius);
+    padding: 16px;
+}
+
+.cart-panel-head {
+    font-size: 12px; letter-spacing: 1.6px;
+    color: var(--text-dim);
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--row-line);
+}
+
+.cart-list { list-style: none; max-height: 260px; overflow-y: auto; }
+
+.cart-list li {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--row-line);
+    font-size: 13px;
+}
+
+.cart-list .rm {
+    border: none; background: transparent;
+    color: var(--text-faint);
+    cursor: pointer; font-size: 15px;
+}
+.cart-list .rm:hover { color: var(--text); }
+
+.cart-panel-foot {
+    display: flex; justify-content: space-between;
+    padding: 12px 0;
+    font-size: 13px; letter-spacing: 1.2px;
+}
+
+.checkout-btn {
+    width: 100%;
+    height: 42px;
+    border: none; border-radius: var(--radius);
+    background: #ffffff; color: #101012;
+    font-size: 13px; font-weight: 700; letter-spacing: 1.4px;
+    cursor: pointer;
+}
+.checkout-btn:hover { background: #e7e7ea; }
+
+/* ---------------------------------------------------------------- toast */
+
+.toast {
+    position: absolute;
+    top: 24px; left: 50%;
+    transform: translateX(-50%);
+    padding: 12px 22px;
+    border-radius: var(--radius);
+    background: rgba(18,18,20,0.96);
+    font-size: 13px;
+    letter-spacing: 0.6px;
+}
+.toast.err { color: #ff8f8f; }
+.toast.ok  { color: #9ff0b4; }

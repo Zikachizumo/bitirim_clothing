@@ -1,0 +1,3 @@
+Thumbnail PNG'leri buraya uretilecek (bkz. docs/CATALOG.md).
+Adlandirma: <slot>_<drawable>.png  -- or. jacket_12.png, hat_5.png
+Dosya yoksa NUI tile'da drawable numarasini gosterir (kirilmaz).

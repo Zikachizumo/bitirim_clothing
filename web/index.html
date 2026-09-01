@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>bitirim_clothing</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app" class="hidden">
+
+    <!-- Sag ust: kapat -->
+    <button id="close-btn" class="close-btn">
+        <span>CLOSE</span><kbd>ESC</kbd>
+    </button>
+
+    <!-- Sol panel -->
+    <aside class="panel">
+
+        <!-- KOK EKRAN -->
+        <section id="view-root" class="view">
+            <header class="panel-head">
+                <h1>SHOP</h1>
+                <h2>CLOTHES</h2>
+            </header>
+            <nav id="category-list" class="category-list"></nav>
+        </section>
+
+        <!-- KATEGORI EKRANI -->
+        <section id="view-category" class="view hidden">
+            <header class="cat-head">
+                <button id="back-btn" class="icon-btn" aria-label="Geri">&#8592;</button>
+                <span id="cat-title" class="cat-title"></span>
+                <span id="cat-icon" class="cat-icon"></span>
+            </header>
+            <div id="grid" class="grid"></div>
+        </section>
+
+    </aside>
+
+    <!-- Alt orta: secili parca karti -->
+    <div id="item-card" class="item-card hidden">
+        <div id="item-name" class="item-name"></div>
+        <div class="item-crumb"><span class="caret">&#9662;</span> <span id="item-crumb-text"></span></div>
+        <div class="item-actions">
+            <div class="stepper">
+                <button id="qty-minus" class="qty-btn">&#8722;</button>
+                <span id="qty">1</span>
+                <button id="qty-plus" class="qty-btn">+</button>
+            </div>
+            <button id="add-cart" class="add-cart">
+                <span class="plus">+</span> ADD TO CART
+                <span id="item-price" class="price"></span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Sol alt: dondurme ipucu -->
+    <div class="turn-hint">
+        <span class="mouse"></span>
+        <span class="turn-text">TURN<br>CHARACTER</span>
+    </div>
+
+    <!-- Sag alt: sepet -->
+    <div id="cart-area" class="cart-area">
+        <div id="cart-text" class="cart-text">THERE ARE NO ITEMS IN THE SHOPPING CART</div>
+        <button id="cart-btn" class="cart-btn" aria-label="Sepet">
+            <span class="cart-icon"></span>
+            <span id="cart-count" class="cart-count hidden">0</span>
+        </button>
+    </div>
+
+    <!-- Sepet paneli -->
+    <div id="cart-panel" class="cart-panel hidden">
+        <div class="cart-panel-head">SEPET</div>
+        <ul id="cart-list" class="cart-list"></ul>
+        <div class="cart-panel-foot">
+            <span>TOPLAM</span>
+            <span id="cart-total"></span>
+        </div>
+        <button id="checkout-btn" class="checkout-btn">SATIN AL</button>
+    </div>
+
+    <!-- Bildirim -->
+    <div id="toast" class="toast hidden"></div>
+
+</div>
+<script src="app.js"></script>
+</body>
+</html>

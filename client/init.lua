@@ -37,3 +37,21 @@ CreateThread(function()
     local indexed = BitirimClothing.Compat.loadRules(rows)
     print(('^2[bitirim_clothing] %d uyumluluk kurali indekslendi (Top->Arms).^7'):format(indexed))
 end)
+
+--[[
+    Gizlenen parcalar (katalogdan cikarilacaklar). Basarisiz olursa magaza
+    calismaya devam eder, sadece hicbir parca gizlenmez.
+]]
+CreateThread(function()
+    Wait(1200)
+    local rows = lib.callback.await('bitirim_clothing:getHidden', false)
+    if type(rows) ~= 'table' then
+        print('^3[bitirim_clothing] Gizli parca listesi alinamadi.^7')
+        return
+    end
+    local n = BitirimClothing.Hidden.load(rows)
+    if n > 0 then
+        print(('^2[bitirim_clothing] %d gizli parca yuklendi.^7'):format(n))
+        BitirimClothing.Catalog.invalidate()
+    end
+end)

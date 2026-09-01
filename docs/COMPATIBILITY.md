@@ -186,13 +186,57 @@ katman 2 ve 4'te çalışmaya devam ediyor.
 
 Beklenen kapsam ~%88.3 — **doğrulanacak.**
 
-### Açık kalan: 48 `no_forced`
+### Son kapsam (ölçüldü, 2026-09-01)
 
-Bunlarda oyunun hiç zorunlu bileşen kaydı yok. Ucuz bir ihtimal ölçülüyor:
-hash texture'a bağlı olduğu için texture 0'da veri olmayan bir parçanın başka
-bir renginde veri olabilir. `/kiyafetkapsam` bunu ayrıca raporluyor
-(`Compat.forcedArmsAnyTexture`). Sayı yüksek çıkarsa katman 1'e texture
-taraması eklenir — **önce ölçülür, sonra yazılır.**
+`Config.BlacklistFiltersGameData = false` sonrası:
+
+| katman | adet | oran |
+|---|---|---|
+| 1 (oyun) | **474** | %87.1 |
+| 2 (DB) | 5 | %0.9 |
+| 4 (varsayılan) | 65 | %11.9 |
+| **gerçek kapsam** | | **%88.1** |
+
+Yolculuk: **%2.0 → %79.6 → %88.1**
+
+Kalan 65'in kırılımı:
+
+| sebep | adet | değerlendirme |
+|---|---|---|
+| `no_forced` | 48 | gerçek boşluk, varsayılan kolla giyiliyor |
+| `no_hash` | 14 | taban parçalar (0–13), mağazada satılmıyor — zararsız |
+| `no_arms` | 2 | oyun kolu serbest bırakıyor — zararsız |
+| `blacklisted` | 1 | DB'nin o çifte özel `rejected` kaydı veto etti — **güvenlik ağı çalıştı** |
+
+### Texture taraması: ölçüldü, uygulanmadı
+
+48 `no_forced` üstün **yalnızca 1'i** başka bir texture'da cevap veriyor.
+Katman 1'e texture taraması eklemek 1 parça için tüm renkleri taramak
+demekti — **yazılmadı.** Ölçüm, gereksiz kodu önledi.
+
+### Kalan 48 için yaklaşım: gizle, tarama yapma
+
+48 × ~214 kol = ~10.000 görsel karar. Bu yol kapalı. Bunun yerine 48 parça
+**tek tek gözden geçirilir** (48 bakış) ve yalnızca gerçekten bozuk görünenler
+katalogdan çıkarılır:
+
+```
+/kiyafetbosluk          gözden geçirmeyi başlat
+/kiyafetbosluk s / o    sonraki / önceki
+/kiyafetbosluk kol <d>  farklı bir kol dene
+/kiyafetbosluk gizle    bu üstü katalogdan çıkar (kalıcı, DB'ye yazar)
+/kiyafetbosluk goster   geri al
+/kiyafetbosluk cik      bitir, eski görünüme dön
+/kiyafetgizli           gizlenenleri listele
+```
+
+Gizlenenler `bitirim_clothing_hidden` tablosunda tutulur ve katalog taraması
+onları eler (`client/catalog.lua`). `no_hash` olanlar listeye alınmaz — zaten
+mağazada satılmıyorlar.
+
+**Neden hepsi birden gizlenmiyor:** 48'in çoğu varsayılan kolla sorunsuz
+görünür. Körlemesine gizlemek çalışan kıyafetleri de siler. Karar görseldir ve
+kullanıcıya aittir.
 
 ## Kurulum / deploy
 

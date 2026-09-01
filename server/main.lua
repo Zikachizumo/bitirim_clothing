@@ -176,10 +176,75 @@ lib.callback.register('bitirim_clothing:buy', function(source, cart)
 end)
 
 ---------------------------------------------------------------------------
+-- GIZLENEN PARCALAR
+---------------------------------------------------------------------------
+
+--[[
+    Kol verisi olmayan ve GORSEL OLARAK bozuk oldugu elle dogrulanan parcalar
+    burada tutulur ve katalogdan cikarilir. Karar gorseldir; bu tablo sadece
+    kullanicinin verdigi karari kalici kilar.
+]]
+local function ensureHiddenTable()
+    local ok = pcall(MySQL.query.await, [[
+        CREATE TABLE IF NOT EXISTS bitirim_clothing_hidden (
+            id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+            gender VARCHAR(8) NOT NULL,
+            category VARCHAR(32) NOT NULL,
+            drawable SMALLINT UNSIGNED NOT NULL,
+            reason VARCHAR(191) NULL,
+            created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            UNIQUE KEY uniq_hidden (gender, category, drawable)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+    ]])
+    if not ok then
+        print('^3[bitirim_clothing] bitirim_clothing_hidden tablosu olusturulamadi.^7')
+    end
+    return ok
+end
+
+lib.callback.register('bitirim_clothing:getHidden', function()
+    local ok, rows = pcall(MySQL.query.await,
+        'SELECT gender, category, drawable FROM bitirim_clothing_hidden')
+    if not ok or type(rows) ~= 'table' then return {} end
+    return rows
+end)
+
+lib.callback.register('bitirim_clothing:setHidden', function(source, gender, category, drawable, hide, reason)
+    -- Yetki: gizleme katalogu kalici olarak degistirir, ACE sart.
+    if not IsPlayerAceAllowed(source, 'bitirim_clothing.dev') then return false end
+
+    if type(gender) ~= 'string' or type(category) ~= 'string' then return false end
+    drawable = tonumber(drawable)
+    if not drawable or drawable < 0 or drawable % 1 ~= 0 then return false end
+    if gender ~= 'male' and gender ~= 'female' then return false end
+
+    local ok
+    if hide then
+        ok = pcall(MySQL.query.await, [[
+            INSERT INTO bitirim_clothing_hidden (gender, category, drawable, reason)
+            VALUES (?, ?, ?, ?)
+            ON DUPLICATE KEY UPDATE reason = VALUES(reason)
+        ]], { gender, category, drawable, reason })
+    else
+        ok = pcall(MySQL.query.await, [[
+            DELETE FROM bitirim_clothing_hidden
+            WHERE gender = ? AND category = ? AND drawable = ?
+        ]], { gender, category, drawable })
+    end
+
+    if ok then
+        print(('[bitirim_clothing] gizleme %s: %s/%s/%d (src=%d)')
+            :format(hide and 'eklendi' or 'kaldirildi', gender, category, drawable, source))
+    end
+    return ok == true
+end)
+
+---------------------------------------------------------------------------
 -- Baslangic
 ---------------------------------------------------------------------------
 
 AddEventHandler('onResourceStart', function(resource)
     if resource ~= GetCurrentResourceName() then return end
+    ensureHiddenTable()
     loadRules()
 end)

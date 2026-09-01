@@ -83,6 +83,22 @@ function Catalog.get(ped, category)
         result = scanComponent(ped, category.id)
     end
 
+    --[[
+        GIZLENEN PARCALARI DUS. Bunlar, kol verisi olmayan ve gorsel olarak
+        bozuk oldugu ELLE dogrulanan parcalardir (bkz. client/hidden.lua).
+        Lazy erisim: Hidden modulu bu dosyadan sonra yuklenmis olabilir.
+    ]]
+    local Hidden = BitirimClothing.Hidden
+    if Hidden then
+        local kept = {}
+        for _, entry in ipairs(result) do
+            if not Hidden.is(gender, category.key, entry.d) then
+                kept[#kept + 1] = entry
+            end
+        end
+        result = kept
+    end
+
     cache[gender][category.key] = result
     return result
 end

@@ -46,6 +46,7 @@ client_scripts {
     'client/preview.lua',
     'client/shop.lua',
     'client/coverage.lua',
+    'client/hidden.lua',
     'client/probe.lua',
 }
 

@@ -39,7 +39,7 @@ bağlı kalmasınlar diye repoya işlendi.
 
 ### Bekleyen
 
-- Katman 1 **düzeltildi** (model→apparel hash); yeni kapsam `/kiyafetkapsam` ile ölçülecek
+- Katman 1 düzeltildi → kapsam **%2 → %79.6**. Kalan %20.4 için sebep kırılımı ölçülecek
 - Kadın `DefaultArms` ve kadın kol blacklist'i hiç ölçülmedi
 - Thumbnail üretimi (katalog taraması yapıldı)
 - Kamera çerçeveleme değerlerinin oyunda ölçülmesi (`/kiyafetkamera`)

@@ -50,14 +50,24 @@ RegisterCommand('kiyafetkapsam', function()
     ]]
     local n = { game = 0, db = 0, default = 0, none = 0 }
     local gaps = {}
+    local gaps_all = {}
 
     for d = 0, topCount - 1 do
         local _, source = Compat.resolveArms(ped, d, 0)
         local key = source or 'none'
         n[key] = (n[key] or 0) + 1
         if key == 'default' or key == 'none' then
+            gaps_all[#gaps_all + 1] = d
             if #gaps < 40 then gaps[#gaps + 1] = d end
         end
+    end
+
+    -- Kapsanmayanlarin NEDENINI de say: 'no_arms' zararsizdir (oyun kolun
+    -- serbest oldugunu soyluyor), 'no_hash'/'no_forced' ise gercek bosluktur.
+    local why = {}
+    for _, d in ipairs(gaps_all) do
+        local reason = Compat.diagnoseTop(ped, d, 0)
+        why[reason] = (why[reason] or 0) + 1
     end
 
     local pct = function(v) return topCount > 0 and (v / topCount * 100.0) or 0.0 end
@@ -72,6 +82,20 @@ RegisterCommand('kiyafetkapsam', function()
     print(('gercek kapsam (1+2) : %%%.1f'):format(pct(n.game + n.db)))
     if #gaps > 0 then
         print(('kapsanmayan ilk %d ust: %s'):format(#gaps, table.concat(gaps, ', ')))
+    end
+    if next(why) then
+        print('')
+        print('^3--- kapsanmayanlarin sebebi ---^7')
+        local labels = {
+            no_hash     = 'magaza katalogunda yok (taban parca)',
+            no_forced   = 'zorunlu bilesen kaydi yok',
+            no_arms     = 'zorunlu bilesen var ama KOL yok -> oyun kolu serbest birakiyor',
+            blacklisted = 'kol cevabi vardi ama blacklistte',
+            native_yok  = 'native yok',
+        }
+        for reason, adet in pairs(why) do
+            print(('  %-12s %4d  %s'):format(reason, adet, labels[reason] or ''))
+        end
     end
     print('^2======================================================^7')
 end, false)

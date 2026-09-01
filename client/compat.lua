@@ -224,3 +224,41 @@ function Compat.applyTop(ped, drawable, texture)
 end
 
 BitirimClothing.Compat = Compat
+
+--[[
+    TESHIS — bir ust giysi icin katman 1'in NEDEN cevap vermedigini soyler.
+    Sadece olcum/raporlama icin; magaza akisi bunu kullanmaz.
+
+    Donen sebep kodlari:
+      'ok'          katman 1 kol verdi
+      'no_hash'     GetHashNameForComponent 0 dondu -- parca magaza katalogunda
+                    yok (taban/underwear parcalari boyle)
+      'no_forced'   hash var ama zorunlu bilesen kaydi hic yok
+      'no_arms'     zorunlu bilesen var AMA hicbiri kol (componentType 3) degil
+                    -> oyun "bu ustun kolu serbest" diyor
+      'blacklisted' kol cevabi vardi ama global blacklist'te
+      'native_yok'  gerekli native'ler bu surumde yok
+]]
+function Compat.diagnoseTop(ped, topDrawable, topTexture)
+    if not GetHashNameForComponent or not GetNumForcedComponents or not GetForcedComponent then
+        return 'native_yok'
+    end
+
+    local okH, hash = pcall(GetHashNameForComponent, ped, TOP, topDrawable, topTexture or 0)
+    if not okH or not hash or hash == 0 then return 'no_hash' end
+
+    local okC, count = pcall(GetNumForcedComponents, hash)
+    if not okC or type(count) ~= 'number' or count <= 0 then return 'no_forced' end
+
+    local gender = Constants.genderKey(ped)
+    local sawArms = false
+    for i = 0, count - 1 do
+        local okF, _, enumValue, componentType = pcall(GetForcedComponent, hash, i)
+        if okF and componentType == ARMS and type(enumValue) == 'number' and enumValue >= 0 then
+            sawArms = true
+            if not Compat.isBlacklisted(gender, enumValue) then return 'ok' end
+        end
+    end
+
+    return sawArms and 'blacklisted' or 'no_arms'
+end

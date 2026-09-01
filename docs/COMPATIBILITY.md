@@ -145,12 +145,33 @@ hash'iyle yapıyor. Yani envanterin "üst giyilince doğru kolu otomatik uygula"
 özelliği de hiç çalışmamış olmalı; `defaultArms`'a düşme davranışı bunu
 maskeliyor.
 
-### Kapsanmayacak olanlar
+### Düzeltme sonrası kapsam (ölçüldü)
 
-Düşük drawable'lar (0, 1, 5, 14) için `GetHashNameForComponent` `0` döndürüyor —
-bunlar mağaza kataloğuna ait olmayan taban parçalar. Onlarda katman 1 yine
-sessiz kalır, katman 2/4 devreye girer. Yeni kapsam `/kiyafetkapsam` ile
-ölçülecek; **buraya sayı yazılmadan önce ölçülecek.**
+`/kiyafetkapsam`, `mp_m_freemode_01`, 544 üst giysi:
+
+| | önce | sonra |
+|---|---|---|
+| katman 1 (oyun) | 0 (%0.0) | **428 (%78.7)** |
+| katman 2 (DB) | 11 (%2.0) | 5 (%0.9) |
+| katman 4 (varsayılan) | 533 (%98.0) | 111 (%20.4) |
+| **gerçek kapsam** | **%2.0** | **%79.6** |
+
+DB payının 11'den 5'e düşmesi beklenen davranış: katman 1 artık o parçaların
+çoğunda önce cevap veriyor.
+
+Kalan 111 giysi için **sebep kırılımı** `/kiyafetkapsam` çıktısında ayrıca
+raporlanıyor (`Compat.diagnoseTop`). Ayrım kritik:
+
+| sebep | anlamı | risk |
+|---|---|---|
+| `no_arms` | zorunlu bileşen var ama kol yok — **oyun kolu serbest bırakıyor** | düşük |
+| `no_hash` | parça mağaza kataloğunda yok (taban/underwear parçaları, drawable 0–13) | düşük |
+| `no_forced` | hash var ama hiç zorunlu bileşen kaydı yok | **gerçek boşluk** |
+| `blacklisted` | kol cevabı vardı ama global blacklist'te | orta |
+
+`no_arms` ve `no_hash` çoğunluktaysa %20'lik açık büyük ölçüde zararsızdır ve
+iş burada biter. `no_forced` ağır basıyorsa o parçalar için ek çalışma gerekir.
+**Bu kırılım henüz ölçülmedi.**
 
 ## Kurulum / deploy
 

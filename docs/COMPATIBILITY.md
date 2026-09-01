@@ -159,19 +159,40 @@ maskeliyor.
 DB payının 11'den 5'e düşmesi beklenen davranış: katman 1 artık o parçaların
 çoğunda önce cevap veriyor.
 
-Kalan 111 giysi için **sebep kırılımı** `/kiyafetkapsam` çıktısında ayrıca
-raporlanıyor (`Compat.diagnoseTop`). Ayrım kritik:
+### Kalan 111'in sebep kırılımı (ölçüldü)
 
-| sebep | anlamı | risk |
+| sebep | adet | anlamı |
 |---|---|---|
-| `no_arms` | zorunlu bileşen var ama kol yok — **oyun kolu serbest bırakıyor** | düşük |
-| `no_hash` | parça mağaza kataloğunda yok (taban/underwear parçaları, drawable 0–13) | düşük |
-| `no_forced` | hash var ama hiç zorunlu bileşen kaydı yok | **gerçek boşluk** |
-| `blacklisted` | kol cevabı vardı ama global blacklist'te | orta |
+| `blacklisted` | **47** | oyun kol cevabı verdi, blacklist reddetti |
+| `no_forced` | 48 | hash var ama hiç zorunlu bileşen kaydı yok — gerçek boşluk |
+| `no_hash` | 14 | mağaza kataloğunda yok (taban parçalar, drawable 0–13) — zararsız |
+| `no_arms` | 2 | oyun kolu serbest bırakıyor — zararsız |
 
-`no_arms` ve `no_hash` çoğunluktaysa %20'lik açık büyük ölçüde zararsızdır ve
-iş burada biter. `no_forced` ağır basıyorsa o parçalar için ek çalışma gerekir.
-**Bu kırılım henüz ölçülmedi.**
+### Karar: blacklist katman 1'i süzmüyor (2026-09-01)
+
+`Config.BlacklistFiltersGameData = false`. Gerekçe ölçüme dayanıyor: 47 üst
+giyside oyun **zaten doğru kolu söylüyordu**, blacklist reddediyordu.
+
+Blacklist yalnızca **11 üst giysiye** (14–24) karşı test edilerek kurulmuştu ve
+o testlerde kollar, **kendilerini zorunlu kılmayan** üstlerle eşleştirilmişti —
+uyumsuz bir kolun bozuk görünmesi zaten beklenen sonuçtur. "Kol X, 14–24 ile
+kötü" ifadesi "Kol X, onu zorunlu kılan üstle kötü" anlamına gelmez. Rockstar'ın
+parça-bazlı verisi, 11 örnekten yapılan genellemeden daha spesifik bir kanıttır.
+
+**Güvenlik ağı duruyor:** DB'nin o (üst, kol) çiftine **özel** `rejected` kaydı
+katman 1'in cevabını yine veto eder (`resolveArms` → `isRejected`). Körü körüne
+güven yok; yalnızca **küt** global blacklist katman 1'e uygulanmıyor. Blacklist
+katman 2 ve 4'te çalışmaya devam ediyor.
+
+Beklenen kapsam ~%88.3 — **doğrulanacak.**
+
+### Açık kalan: 48 `no_forced`
+
+Bunlarda oyunun hiç zorunlu bileşen kaydı yok. Ucuz bir ihtimal ölçülüyor:
+hash texture'a bağlı olduğu için texture 0'da veri olmayan bir parçanın başka
+bir renginde veri olabilir. `/kiyafetkapsam` bunu ayrıca raporluyor
+(`Compat.forcedArmsAnyTexture`). Sayı yüksek çıkarsa katman 1'e texture
+taraması eklenir — **önce ölçülür, sonra yazılır.**
 
 ## Kurulum / deploy
 

@@ -262,3 +262,35 @@ function Compat.diagnoseTop(ped, topDrawable, topTexture)
 
     return sawArms and 'blacklisted' or 'no_arms'
 end
+
+--[[
+    OLCUM YARDIMCISI — texture 0'da zorunlu-bilesen kaydi olmayan bir ust
+    giysi, BASKA bir texture'inda cevap veriyor mu?
+
+    Hash texture'a bagli oldugu icin bu mumkun. Eger cok sayida 'no_forced'
+    ust baska bir texture'da cevap veriyorsa, cozum katman 1'e texture
+    taramasi eklemek olur -- ama once OLCULUR, sonra yazilir.
+
+    Donus: cevap veren texture (number) veya nil.
+]]
+function Compat.forcedArmsAnyTexture(ped, topDrawable)
+    if not GetNumberOfPedTextureVariations then return nil end
+
+    local textureCount = GetNumberOfPedTextureVariations(ped, TOP, topDrawable) or 0
+    for t = 1, textureCount - 1 do   -- 0 zaten denendi
+        local okH, hash = pcall(GetHashNameForComponent, ped, TOP, topDrawable, t)
+        if okH and hash and hash ~= 0 then
+            local okC, count = pcall(GetNumForcedComponents, hash)
+            if okC and type(count) == 'number' and count > 0 then
+                for i = 0, count - 1 do
+                    local okF, _, enumValue, componentType = pcall(GetForcedComponent, hash, i)
+                    if okF and componentType == ARMS and type(enumValue) == 'number' and enumValue >= 0 then
+                        return t
+                    end
+                end
+            end
+        end
+    end
+
+    return nil
+end

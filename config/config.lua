@@ -113,10 +113,22 @@ Config.DefaultArms = {
     Blacklist, katman 1'in (oyunun kendi zorunlu-bilesen verisi) cevabini da
     suzsun mu?
 
-    true  (varsayilan) — EN GUVENLI. Blacklist'teki kollar "kendi baslarina
-          bozuk" olduklari icin listeye girdi; oyun onlari zorunlu kilsa bile
-          kullanilmaz, bir alt katmana dusulur.
-    false — oyunun cevabi her zaman kazanir. Kapsama artar ama blacklist'teki
-          bir kol geri gelebilir.
+    false (VARSAYILAN, 2026-09-01 kullanici karari) — oyunun parca-bazli
+          cevabi kazanir. Olculen gerekce: 111 kapsanmayan ustun 47'sinde oyun
+          ZATEN dogru kolu soyluyordu, blacklist reddediyordu. Blacklist ise
+          sadece 14..24 arasi 11 uste karsi test edilerek kurulmustu ve o
+          testlerde kollar, KENDILERINI ZORUNLU KILMAYAN ustlerle eslesmisti --
+          uyumsuz kolun bozuk gorunmesi zaten beklenen sey. Rockstar'in
+          parca-bazli verisi, 11 ornekten yapilan genellemeden daha spesifik.
+          Kapsam: %79.6 -> ~%88.3.
+
+          GUVENLIK AGI DURUYOR: DB'nin o (ust, kol) ciftine OZEL 'rejected'
+          kaydi katman 1'in cevabini yine veto eder (bkz. resolveArms ->
+          isRejected). Yani koru korune guven yok; sadece KUYE blacklist
+          katman 1'e uygulanmiyor. Blacklist katman 2 ve 4'te calismaya
+          devam ediyor.
+
+    true  — blacklist her katmani suzer. Daha muhafazakar ama o 47 ust tek bir
+          eldivenli varsayilan kolla (135) giyilir.
 ]]
-Config.BlacklistFiltersGameData = true
+Config.BlacklistFiltersGameData = false

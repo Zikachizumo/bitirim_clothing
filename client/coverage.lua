@@ -65,9 +65,14 @@ RegisterCommand('kiyafetkapsam', function()
     -- Kapsanmayanlarin NEDENINI de say: 'no_arms' zararsizdir (oyun kolun
     -- serbest oldugunu soyluyor), 'no_hash'/'no_forced' ise gercek bosluktur.
     local why = {}
+    local noForcedButOtherTexture = 0
     for _, d in ipairs(gaps_all) do
         local reason = Compat.diagnoseTop(ped, d, 0)
         why[reason] = (why[reason] or 0) + 1
+        -- texture 0'da veri yoksa, baska bir renginde var mi?
+        if reason == 'no_forced' and Compat.forcedArmsAnyTexture(ped, d) then
+            noForcedButOtherTexture = noForcedButOtherTexture + 1
+        end
     end
 
     local pct = function(v) return topCount > 0 and (v / topCount * 100.0) or 0.0 end
@@ -95,6 +100,10 @@ RegisterCommand('kiyafetkapsam', function()
         }
         for reason, adet in pairs(why) do
             print(('  %-12s %4d  %s'):format(reason, adet, labels[reason] or ''))
+        end
+        if (why.no_forced or 0) > 0 then
+            print(('  ^3-> no_forced olanlarin %d tanesi BASKA bir texture icin cevap veriyor^7')
+                :format(noForcedButOtherTexture))
         end
     end
     print('^2======================================================^7')

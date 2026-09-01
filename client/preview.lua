@@ -137,6 +137,15 @@ local function dumpFraming()
 end
 
 RegisterCommand('kiyafetkamera', function(_, args)
+    -- Cekim surerken kamerayi kurcalamak butun kareleri bozuyor (yasandi:
+    -- 1200+ kare oyun kamerasiyla cekildi). Is bitene kadar reddet.
+    local capture = BitirimClothing.Capture
+    if capture and capture.isRunning() then
+        print('^1Thumbnail cekimi suruyor -- kamera simdi degistirilemez.^7')
+        print('^3Once /kiyafetcekdur ile durdur.^7')
+        return
+    end
+
     local framing = args[1]
 
     -- Magaza disinda da ayar yapabilmek icin kamerayi tek basina ac/kapa.

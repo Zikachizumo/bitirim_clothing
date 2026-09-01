@@ -94,5 +94,17 @@ kaplıyordu (hedef ~%55) ve dikey merkezi %49.3'teydi. İki sonuç:
 `zoom` FOV'a çevrilirken oyunun varsayılan FOV'u `GetCamFov` ile **çalışırken
 okunuyor**, sabit varsayılmıyor.
 
+### Çekim sırasında sahne kilitli
+
+Bir tur, çekim sürerken `/kiyafetkamera kapat` yazıldığı için bozuldu: kamera
+ölünce `place()` sessizce erken dönüyordu, kalan **1200+ kare normal oyun
+kamerasıyla ve karakter sokakta yürürken** çekildi. İş yine de
+"TAMAMLANDI — 1390 yazıldı" dedi; tek satır hata yoktu.
+
+Artık sahne **her parçada** doğrulanıyor (`ensureStage`): karakter doğru
+noktada mı, donuk mu, kamera açık mı — bozulmuşsa toparlanıyor. Ayrıca
+karakter çekim boyunca donduruluyor ve `/kiyafetkamera` iş bitene kadar
+reddediyor.
+
 Thumbnail üretimi için `/kiyafetcek` (bkz. Komutlar). Dosya yoksa NUI tile'da drawable
 numarasını gösterir, kırılmaz.

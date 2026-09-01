@@ -38,6 +38,11 @@ local THUMB_SIZE = 512
 
 local job = { running = false, cancel = false }
 
+-- preview.lua bunu okuyup /kiyafetkamera'yi is sirasinda reddediyor.
+BitirimClothing.Capture = {
+    isRunning = function() return job.running end,
+}
+
 local function categoryByKey(key)
     for _, c in ipairs(Config.Categories) do
         if c.key == key then return c end
@@ -63,6 +68,38 @@ local function cleanScreen(on)
     end
 end
 
+--[[
+    SAHNE GARANTISI.
+
+    Olculdu (2026-09-01): kullanici cekim surerken /kiyafetkamera kapat yazdi.
+    Kamera olunce `place()` sessizce erken donuyordu, kalan 1200+ kare normal
+    oyun kamerasiyla ve sokakta cekildi -- is "TAMAMLANDI 1390 yazildi" dedi,
+    dosyalarin cogu copti. Tek satir bile hata vermedi.
+
+    Onun icin sahne artik HER PARCADA dogrulaniyor: ped dogru noktada mi,
+    donuk mu, kamera acik mi. Bozulmussa sessizce toparlaniyor.
+]]
+local function ensureStage(ped, category)
+    local p = Config.CaptureCoords or Config.Store.previewCoords
+
+    local c = GetEntityCoords(ped)
+    if #(vec3(c.x, c.y, c.z) - vec3(p.x, p.y, p.z)) > 0.6 then
+        SetEntityCoords(ped, p.x, p.y, p.z, false, false, false, false)
+        SetEntityHeading(ped, p.w)
+        Wait(250)
+    end
+
+    -- Oyuncu cekim sirasinda yuruyup sahneden cikamasin.
+    FreezeEntityPosition(ped, true)
+
+    if not Preview.isActive() then
+        Preview.start(ped)
+        Wait(250)
+    end
+
+    Preview.setFraming(ped, category.camera)
+end
+
 local function captureCategory(ped, category, startAt, force)
     local list = Catalog.get(ped, category)
     if #list == 0 then
@@ -70,7 +107,7 @@ local function captureCategory(ped, category, startAt, force)
         return 0, 0
     end
 
-    Preview.setFraming(ped, category.camera)
+    ensureStage(ped, category)
     Wait(300)
 
     local written, skipped = 0, 0
@@ -84,6 +121,8 @@ local function captureCategory(ped, category, startAt, force)
             if exists then
                 skipped = skipped + 1
             else
+                ensureStage(ped, category)
+
                 local texture = entry.t[1] or 0
                 if applyPiece(ped, category, entry.d, texture) then
                     -- Ped'in yeni parcayi cizmesi icin birkac kare bekle.
@@ -159,7 +198,11 @@ RegisterCommand('kiyafetcek', function(_, args)
         SetEntityCoords(ped, p.x, p.y, p.z, false, false, false, false)
         SetEntityHeading(ped, p.w)
         Wait(300)
+        FreezeEntityPosition(ped, true)
         Preview.start(ped)
+
+        print('^3[cek] Karakter cekim boyunca donduruldu. Kamerayi KAPATMA^7')
+        print('^3      (/kiyafetkamera kapat cekimi bozar). Durdurmak: /kiyafetcekdur^7')
 
         CreateThread(function()
             while job.running do cleanScreen(true) Wait(0) end
@@ -181,6 +224,7 @@ RegisterCommand('kiyafetcek', function(_, args)
         Preview.stop()
         Apply.restore(ped, snapshot)
         SetEntityCoords(ped, back.x, back.y, back.z, false, false, false, false)
+        FreezeEntityPosition(ped, false)
 
         print(('^2[cek] %s -- toplam %d yazildi, %d zaten vardi^7')
             :format(job.cancel and 'DURDURULDU' or 'TAMAMLANDI', totalW, totalS))
@@ -213,5 +257,6 @@ end, false)
 AddEventHandler('onResourceStop', function(resource)
     if resource == GetCurrentResourceName() then
         job.cancel, job.running = true, false
+        FreezeEntityPosition(PlayerPedId(), false)
     end
 end)

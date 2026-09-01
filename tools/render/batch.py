@@ -35,6 +35,14 @@ PREFIX = {'jacket': 'jbib', 'tshirt': 'accs', 'pants': 'lowr',
 SKIP = {'uppr'}
 
 
+def _clothing_rpf(low):
+    base = low.rsplit('/', 1)[-1]
+    return ('cdimage' in low or base == 'dlc.rpf'
+            or base.endswith(('_male.rpf', '_female.rpf', '_male_p.rpf', '_female_p.rpf'))
+            or '_outfits.rpf' in base
+            or (base.startswith('mp') and 'vehicle' not in base))
+
+
 def load_wanted(mapdir):
     """(folder, prefix, num) -> (slot, drawable)"""
     want = {}
@@ -50,17 +58,30 @@ def load_wanted(mapdir):
 
 
 def sources():
-    yield os.path.join(GTA, 'x64v.rpf')
+    # chain.build ile AYNI kaynak listesi olmali. Sadece x64v + dlcpacks
+    # bakmak eksikti: erken DLC'ler (mpBeach, mpHipster...) x64w.rpf'in
+    # icindeki dlc.rpf'te duruyor -- 51 parcanin .ydd'si o yuzden bulunamadi.
+    for c in 'abcdefghijklmnopqrstuvw':
+        p = os.path.join(GTA, 'x64%s.rpf' % c)
+        if os.path.exists(p):
+            yield p
+    for f in ('update.rpf', 'update2.rpf'):
+        p = os.path.join(GTA, 'update', f)
+        if os.path.exists(p):
+            yield p
     for d in sorted(os.listdir(DLC)):
         p = os.path.join(DLC, d, 'dlc.rpf')
         if os.path.exists(p):
             yield p
 
 
-def process(archive, want, outdir, tmp, stats):
-    """Bir ic arsivi tara ve icindeki istenen parcalari render et."""
-    # klasor -> {prefix_num: entry} indeksle
-    ydds, ytds = {}, {}
+def index_archive(archive, want, ydds, ytds):
+    """Bu arsivdeki istenen .ydd ve .ytd girdilerini GLOBAL indekse ekle.
+
+    Arsiv basina eslestirmek YANLIS: bir parcanin .ydd'si mp2024_02_male.rpf'te
+    iken .ytd'si patch2025_01_male.rpf'te olabiliyor. Oyle yapinca 285 parca
+    'dokusuz' diye elendi. Once her sey indeksleniyor, sonra render ediliyor.
+    """
     for e in archive.iter_entries():
         s = str(getattr(e, 'path', ''))
         low = s.lower()
@@ -72,35 +93,40 @@ def process(archive, want, outdir, tmp, stats):
 
         if low.endswith('.ydd'):
             m = re.match(r'^([a-z_]+?)_(\d{3})(?:_[a-z])?\.ydd$', f)
-            if m and (folder, m.group(1), int(m.group(2))) in want:
-                ydds[(folder, m.group(1), int(m.group(2)))] = e
+            if m:
+                k = (folder, m.group(1), int(m.group(2)))
+                if k in want and k not in ydds:
+                    ydds[k] = (archive, e)
         elif low.endswith('.ytd'):
             m = re.match(r'^([a-z_]+?)_diff_(\d{3})_([a-z])(?:_.*)?\.ytd$', f)
             if m:
                 k = (folder, m.group(1), int(m.group(2)))
                 if k in want and (k not in ytds or m.group(3) < ytds[k][0]):
-                    ytds[k] = (m.group(3), e)
+                    ytds[k] = (m.group(3), archive, e)
 
-    for k, ydd_entry in ydds.items():
-        if k not in ytds:
-            stats['doku_yok'] += 1
-            continue
-        slot, drawable = want[k]
-        out = os.path.join(outdir, '%s_%d.png' % (slot, drawable))
-        if os.path.exists(out):
-            stats['atlandi'] += 1
+
+def index_walk(archive, want, ydds, ytds, depth=0):
+    """
+    Arsivi ve giysi tasiyabilecek ic arsivlerini ozyinelemeli indeksle.
+
+    Tek kat inmek yetmiyordu: erken DLC'ler (mpBeach, mpHipster, mpBusiness,
+    mpValentines...) x64w.rpf > dlc.rpf > mpbeach.rpf seklinde IKI KAT ice
+    gomulu. Onlarin 51 parcasi bu yuzden bulunamiyordu.
+    """
+    index_archive(archive, want, ydds, ytds)
+    if depth >= 3:
+        return
+    for e in list(archive.iter_entries()):
+        s = str(getattr(e, 'path', ''))
+        low = s.lower()
+        if not low.endswith('.rpf') or not _clothing_rpf(low):
             continue
         try:
-            yp = os.path.join(tmp, 'a.ydd')
-            tp = os.path.join(tmp, 'a.ytd')
-            open(yp, 'wb').write(archive.read_entry_standalone(ydd_entry))
-            open(tp, 'wb').write(archive.read_entry_standalone(ytds[k][1]))
-            render_ydd.render(yp, tp, out, size=512, yaw=180, quiet=True)
-            stats['yazildi'] += 1
-        except Exception as ex:
-            stats['hata'] += 1
-            if stats['hata'] <= 5:
-                print('  HATA %s %s_%03d: %s' % (k[0][-20:], k[1], k[2], ex))
+            n = archive.load_nested_archive(e)
+        except Exception:
+            continue
+        if n is not None:
+            index_walk(n, want, ydds, ytds, depth + 1)
 
 
 def main():
@@ -112,28 +138,42 @@ def main():
     want = load_wanted(mapdir)
     print('istenen parca: %d' % len(want))
 
-    stats = {'yazildi': 0, 'atlandi': 0, 'hata': 0, 'doku_yok': 0}
+    # --- 1. gecis: global indeks
     t0 = time.time()
-
+    ydds, ytds = {}, {}
     for src in sources():
         try:
             a = ff.load_rpf(src)
         except Exception:
             continue
-        for e in list(a.iter_entries()):
-            s = str(getattr(e, 'path', ''))
-            if not s.lower().endswith('.rpf') or 'cdimage' not in s.lower():
-                continue
-            try:
-                n = a.load_nested_archive(e)
-            except Exception:
-                continue
-            if n is None:
-                continue
-            process(n, want, outdir, tmp, stats)
-        print('  %-58s yazilan=%d atlanan=%d hata=%d  %.0fs'
-              % (os.path.basename(os.path.dirname(src)) or 'x64v',
-                 stats['yazildi'], stats['atlandi'], stats['hata'], time.time() - t0))
+        index_walk(a, want, ydds, ytds)
+    print('indeks %.0f sn: %d ydd, %d ytd' % (time.time() - t0, len(ydds), len(ytds)))
+
+    # --- 2. gecis: render
+    stats = {'yazildi': 0, 'atlandi': 0, 'hata': 0, 'doku_yok': 0}
+    for k, (ar, ydd_e) in sorted(ydds.items()):
+        slot, drawable = want[k]
+        out = os.path.join(outdir, '%s_%d.png' % (slot, drawable))
+        if os.path.exists(out):
+            stats['atlandi'] += 1
+            continue
+        if k not in ytds:
+            stats['doku_yok'] += 1
+            continue
+        try:
+            yp = os.path.join(tmp, 'a.ydd')
+            tp = os.path.join(tmp, 'a.ytd')
+            open(yp, 'wb').write(ar.read_entry_standalone(ydd_e))
+            _, tar, te = ytds[k]
+            open(tp, 'wb').write(tar.read_entry_standalone(te))
+            render_ydd.render(yp, tp, out, size=512, yaw=180, quiet=True)
+            stats['yazildi'] += 1
+            if stats['yazildi'] % 100 == 0:
+                print('  %d yazildi  %.0f sn' % (stats['yazildi'], time.time() - t0))
+        except Exception as ex:
+            stats['hata'] += 1
+            if stats['hata'] <= 8:
+                print('  HATA %s %s_%03d: %s' % (k[0][-24:], k[1], k[2], ex))
 
     print('\nbitti: %(yazildi)d yazildi, %(atlandi)d zaten vardi, '
           '%(hata)d hata, %(doku_yok)d dokusuz' % stats)

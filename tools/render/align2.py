@@ -21,6 +21,19 @@ import json
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import chain
 
+
+def dlc_order():
+    """paket adi (kucuk harf) -> dlclist.xml sirasi. Temel oyun -1."""
+    order = {}
+    try:
+        lines = [l.strip() for l in open('C:/bcc/out/dlclist.txt') if l.strip()]
+    except OSError:
+        return order
+    for i, l in enumerate(lines):
+        name = l.rstrip('/').rsplit('/', 1)[-1].lower()
+        order[name] = i
+    return order
+
 CATS = [
     ('outerwear', '11', 'components', 'jbib',   'jacket'),
     ('tshirts',   '8',  'components', 'accs',   'tshirt'),
@@ -56,11 +69,20 @@ def ranges(idx):
     return out
 
 
-def tilings(runtime, lo, hi, pool, limit=MAX_TILINGS):
-    """[lo,hi] araligini pool'daki klasorlerle tam doseyen tum cozumler."""
-    found = []
+def tilings(runtime, lo, hi, pool, rank=None, lo_rank=None, hi_rank=None,
+            limit=MAX_TILINGS):
+    """
+    [lo,hi] araligini pool'daki klasorlerle tam doseyen tum cozumler.
 
-    def rec(pos, used, acc):
+    KRONOLOJIK KISIT: jbib'de dogrulandi ki calisma zamani sirasi DLC yukleme
+    (dlclist.xml) sirasi. O yuzden bir dosemedeki paketler artan sirada olmali
+    ve boslugun iki yanindaki capalarin sirasi arasinda kalmali. Bu kisit
+    'N doseme' belirsizliklerinin cogunu tek cozume indiriyor.
+    """
+    found = []
+    rank = rank or {}
+
+    def rec(pos, used, acc, last):
         if len(found) >= limit:
             return
         if pos > hi:
@@ -74,13 +96,19 @@ def tilings(runtime, lo, hi, pool, limit=MAX_TILINGS):
                 continue
             if runtime[pos:pos + len(s)] != s:
                 continue
+            r = rank.get(folder)
+            if r is not None:
+                if r < last:
+                    continue
+                if hi_rank is not None and r > hi_rank:
+                    continue
             used.add(folder)
             acc.append((pos, folder))
-            rec(pos + len(s), used, acc)
+            rec(pos + len(s), used, acc, r if r is not None else last)
             acc.pop()
             used.discard(folder)
 
-    rec(lo, set(), [])
+    rec(lo, set(), [], lo_rank if lo_rank is not None else -2)
     return found
 
 
@@ -124,9 +152,31 @@ def main():
 
         # --- 2. gecis: bosluklari tek sekilde doseyerek doldur
         pool = {f: v for f, v in seqs.items() if f not in placed and v[1]}
+
+        # klasor -> dlclist sirasi (paketinden)
+        ORD = dlc_order()
+        rank = {}
+        for f in seqs:
+            pk = (origin.get(f) or '').lower().strip('()')
+            rank[f] = ORD.get(pk)
+
+        # bosluk oncesi/sonrasi capalarin sirasi -> arama araligi
+        def anchor_rank(idx, step):
+            i = idx
+            while 0 <= i < len(runtime):
+                if i in mapping:
+                    r = rank.get(mapping[i][0])
+                    if r is not None:
+                        return r
+                i += step
+            return None
+
         unresolved = []
         for lo, hi in ranges([i for i in range(len(runtime)) if i not in taken]):
-            sols = tilings(runtime, lo, hi, pool)
+            sols = tilings(runtime, lo, hi, pool,
+                           rank=rank,
+                           lo_rank=anchor_rank(lo - 1, -1),
+                           hi_rank=anchor_rank(hi + 1, 1))
             if len(sols) == 1:
                 for p, folder in sols[0]:
                     nums, s = seqs[folder]

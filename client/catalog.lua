@@ -21,12 +21,27 @@ local cache = {}
 -- Tarama
 ---------------------------------------------------------------------------
 
+--[[
+    TABAN DEGERI KATALOGA GIRMEZ.
+
+    Her component'in bir "hicbir sey giyilmemis" drawable'i var
+    (Constants.BaseState: ust=15, tisort=15, pantolon=21, ayakkabi=34).
+    Bunlar giysi degil, ciplak taban. Rockstar bunlara yer tutucu doku vermis:
+    magazada YESIL DAMA TAHTASI olarak goruluyordu (jbib drawable 15).
+    Satin alinabilir bir urun de degiller.
+]]
+local function isBaseState(componentId, drawable)
+    local base = Constants.BaseState[componentId]
+    return base ~= nil and base.drawable == drawable
+end
+
 local function scanComponent(ped, componentId)
     local out = {}
     local drawableCount = GetNumberOfPedDrawableVariations(ped, componentId)
     if type(drawableCount) ~= 'number' or drawableCount <= 0 then return out end
 
     for d = 0, drawableCount - 1 do
+      if not isBaseState(componentId, d) then
         local textures = {}
         local textureCount = GetNumberOfPedTextureVariations(ped, componentId, d) or 0
         for t = 0, textureCount - 1 do
@@ -38,6 +53,7 @@ local function scanComponent(ped, componentId)
         if #textures > 0 then
             out[#out + 1] = { d = d, t = textures }
         end
+      end
     end
 
     return out

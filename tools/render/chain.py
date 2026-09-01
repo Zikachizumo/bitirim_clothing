@@ -26,6 +26,34 @@ PROP_YDD = re.compile(r'^(p_[a-z]+)_(\d{3})\.ydd$')
 PROP_YTD = re.compile(r'^(p_[a-z]+)_diff_(\d{3})_([a-z])\.ytd$')
 
 
+
+def _giysi_arsivi(low):
+    """
+    Bu ic arsive inilsin mi?
+
+    Filtresiz inmek YANLIS (olculdu: kapsama 441 -> 331 dustu, cunku fazladan
+    doku bulunca parmak izi dizisi bozuluyor). Ama sadece 'cdimage' aramak da
+    eksikti -- hedefli arama (hunt_folders.py) giysilerin su adlarda da
+    durdugunu gosterdi:
+      x64w.rpf > dlc.rpf > mpbeach.rpf        (cift ic ice, erken DLC'ler)
+      mppatchesng > mppatches_m_outfits.rpf
+      patchday27ng > patchday27ng_male.rpf
+    """
+    base = low.rsplit('/', 1)[-1]
+    if 'cdimage' in low:
+        return True
+    if base == 'dlc.rpf':
+        return True
+    if base.endswith(('_male.rpf', '_female.rpf', '_male_p.rpf', '_female_p.rpf')):
+        return True
+    if '_outfits.rpf' in base:
+        return True
+    # x64w.rpf > dlc.rpf icindeki mpbeach.rpf / mphipster.rpf gibi paketler
+    if base.startswith('mp') and base.endswith('.rpf') and 'vehicle' not in base:
+        return True
+    return False
+
+
 def scan_archive(a, acc, src, depth=0):
     for e in a.iter_entries():
         s = str(getattr(e, 'path', ''))
@@ -43,9 +71,7 @@ def scan_archive(a, acc, src, depth=0):
             m = YTD.match(fname) or PROP_YTD.match(fname)
             if m:
                 acc[folder][m.group(1)].setdefault(int(m.group(2)), set()).add(m.group(3))
-        elif low.endswith('.rpf') and depth < 2 and 'cdimage' in low:
-            # DAR filtre bilincli: tum ic arsivlere inince (depth<3, filtresiz)
-            # klasor adlari karisti ve kapsama 441'den 331'e DUSTU. Olculdu.
+        elif low.endswith('.rpf') and depth < 4 and _giysi_arsivi(low):
             try:
                 n = a.load_nested_archive(e)
             except Exception:

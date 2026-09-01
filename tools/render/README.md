@@ -54,18 +54,35 @@ birebir aynı giysi**. Zincir uçtan uca kanıtlandı.
 
 | kategori | eşleşen | toplam | oran |
 |---|---|---|---|
-| ayakkabı | 130 | 151 | %86.1 |
-| pantolon | 170 | 202 | %84.2 |
-| üst giysi | 447 | 544 | %82.2 |
-| kol (uppr) | 163 | 214 | %76.2 |
-| tişört | 142 | 213 | %66.7 |
+| pantolon | 181 | 202 | %89.6 |
+| üst giysi | 478 | 544 | %87.9 |
+| ayakkabı | 132 | 151 | %87.4 |
+| tişört | 181 | 213 | %85.0 |
+| kol (uppr) | 165 | 214 | %77.1 |
 | gözlük | 37 | 59 | %62.7 |
-| şapka | 118 | 221 | %53.4 |
+| şapka | 136 | 221 | %61.5 |
 
-Eksiklerin sebebi algoritma değil, **varlık bulma**: bazı DLC'lerin giysi
-arşivleri beklenen yerde değil. Örnek: `mptuner/dlc.rpf` içinde hiç giysi
-arşivi yok — Enhanced sürümü onları başka yere taşımış. Erken DLC'ler
-(mpBeach, mpHipster…) zaten diskte ayrı paket olarak yok.
+Eşlenen 1145 parçanın **1139'u render edildi** (%99.5). Kalan 6'sı `A8`
+doku formatında — BC1/BC3 dışı, desteklenmiyor.
+
+### Arşiv gezintisi: nerelere inilmeli
+
+Kapsamayı asıl sınırlayan şey algoritma değil, **dosyaları bulmak**. Hedefli
+arama (`hunt_folders.py`) giysilerin dağılımını gösterdi:
+
+- `x64w.rpf > dlc.rpf > mpbeach.rpf` — erken DLC'ler **iki kat** iç içe.
+  Tek kat inmek 51 parçayı kaçırıyordu.
+- `mppatchesng > mppatches_m_outfits.rpf`, `patchday27ng > patchday27ng_male.rpf`
+  — `cdimage` içermeyen adlar.
+- Bir parçanın `.ydd`'si ile `.ytd`'si **farklı arşivlerde** olabiliyor
+  (`mp2024_02_male.rpf` ↔ `patch2025_01_male.rpf`). Arşiv başına eşleştirmek
+  39 parçayı "dokusuz" diye eliyordu; önce global indeks, sonra render.
+- `mptuner/dlc.rpf` içinde hiç giysi arşivi **yok** — Enhanced sürümü
+  taşımış.
+
+Ama filtresiz inmek de yanlış: tüm iç arşivlere inince (depth<3, filtresiz)
+fazladan doku bulunup parmak izi dizisi bozuldu ve kapsama 441'den 331'e
+**düştü**. Filtre hedefli olmalı (`_giysi_arsivi` / `_clothing_rpf`).
 
 Eşlenemeyen parçalar **oyun içi karelerini korur** (`/kiyafetcek` çıktısı),
 yani hiçbir tile boş kalmaz.

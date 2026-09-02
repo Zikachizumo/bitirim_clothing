@@ -46,16 +46,33 @@ local removedItems = {}
 do
     local ok, data = pcall(lib.load, 'data.removed')
     if ok and type(data) == 'table' then
+        --[[
+            Doku listelerini KUMEYE cevir. Dosyada okunakli olsun diye dizi
+            yaziliyor ({0, 3, 4}), aramada ise her parca icin tek tek gezmek
+            gerekmesin diye kume tutuluyor ({[0]=true, [3]=true, [4]=true}).
+        ]]
+        for _, categories in pairs(data) do
+            for _, items in pairs(categories) do
+                for drawable, rule in pairs(items) do
+                    if type(rule) == 'table' then
+                        local set = { why = rule.why }
+                        for _, tex in ipairs(rule) do set[tex] = true end
+                        items[drawable] = set
+                    end
+                end
+            end
+        end
         removedItems = data
     else
         print('^3[bitirim_clothing] data/removed.lua yuklenemedi -- cikarilan parcalar katalogda kalacak.^7')
     end
 end
 
-local function isRemoved(gender, categoryKey, drawable)
+--- nil = dokunma, tablo = sadece o doku numaralari kalksin, baska = parca kalksin.
+local function removalRule(gender, categoryKey, drawable)
     local g = removedItems[gender]
     local c = g and g[categoryKey]
-    return c ~= nil and c[drawable] ~= nil
+    return c and c[drawable] or nil
 end
 
 local function scanComponent(ped, componentId)
@@ -130,9 +147,22 @@ function Catalog.get(ped, category)
     local Hidden = BitirimClothing.Hidden
     local kept = {}
     for _, entry in ipairs(result) do
-        local drop = isRemoved(gender, category.key, entry.d)
-                  or (Hidden ~= nil and Hidden.is(gender, category.key, entry.d))
-        if not drop then
+        local rule = removalRule(gender, category.key, entry.d)
+        local hidden = Hidden ~= nil and Hidden.is(gender, category.key, entry.d)
+
+        if hidden or (rule ~= nil and type(rule) ~= 'table') then
+            -- parca tamamen cikarilmis
+        elseif type(rule) == 'table' then
+            -- sadece belirli dokular cikarilmis; hepsi cikarilmissa parca da duser
+            local left = {}
+            for _, tex in ipairs(entry.t) do
+                if not rule[tex] then left[#left + 1] = tex end
+            end
+            if #left > 0 then
+                entry.t = left
+                kept[#kept + 1] = entry
+            end
+        else
             kept[#kept + 1] = entry
         end
     end

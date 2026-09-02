@@ -208,6 +208,43 @@ Artık eşlenemeyen parça yok; mağazadaki bütün görseller model dosyasında
 geliyor. `/kiyafetcek` (oyun içi kare alma) yalnızca doğrulama aracı olarak
 duruyor.
 
+## Renk (doku) varyantlarının render'ı
+
+Mağazadaki sağ üst renk menüsü her varyantın kendi render'ını gösteriyor.
+`tools/render/batch_tex.py` üretir:
+
+```
+python tools/render/batch_tex.py  tools/render/map_final  web/dump/male.json  <çıktı>  80
+```
+
+Çıktı `<slot>_<drawable>_<doku>.png`, 80x80, saydam. Erkek tarafı için
+**12.705 varyant** (~86 MB) — sunucuda `web/images/tex/` altında.
+
+Bu sadece renk meselesi değil: **doku varyantı siluetin kendisini
+değiştirebiliyor.** `jbib_000` varyant `a` kolsuz atlet, varyant `b` kollu
+tişört — aynı mesh, farklı alfa maskesi. Yani "aynı parça farklı renk"
+varsayımı yanlış.
+
+### Harf ↔ doku indeksi
+
+Dosyalar varyantı harfle adlandırıyor (`jbib_diff_000_a_uni`), oyun ise
+indeksle (`texture 0`). Eşleme ölçüldü:
+
+- 1390 parçanın **1390'ında** harf dizisi kesintisiz `a, b, c…` gidiyor
+- 1382'sinde oyunun bildirdiği doku sayısı = dosya sayısı (8 şapkada dosya
+  fazla, oyun daha azını gösteriyor — fazlalar kullanılmıyor)
+- `a = 0` bağımsız olarak doğrulandı: oyun içi kareler doku 0 ile çekilmişti
+  ve `a` varyantından render edilenlerle birebir tutmuştu (`verify.py`,
+  drawable 157/206/413)
+
+### Materyal her zaman `a`'yı gösterir
+
+Mesh'in materyalinde yazan doku adı hep `..._a_uni`. `b` varyantının
+`.ytd`'sinde ise doku `..._b_uni` adıyla duruyor, yani ad eşitliği tutmaz ve
+"dosyadaki tek gerçek diffuse" kuralına düşülür. Yanlış varyant seçme riski
+olmasın diye `render_ydd.render()` artık `prefer=` ile doğru adı dışarıdan
+alıyor.
+
 ## Ölçülmüş teknik notlar
 
 - **Ped uzayı**: X yanlamasına, Y derinlik, **Z yukarı**. Önden görünüm

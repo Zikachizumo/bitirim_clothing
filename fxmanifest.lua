@@ -66,6 +66,9 @@ files {
     'web/style.css',
     'web/app.js',
     'web/images/*.png',
+    -- Renk (doku) varyantlarinin kucuk render'lari: sag ust renk menusu
+    -- bunlari gosteriyor. Ayri klasor -- yukaridaki glob alt klasore inmiyor.
+    'web/images/tex/*.png',
     -- lib.load('data.arms_blacklist') client tarafinda bu dosyayi okuyor.
     'data/*.lua',
 }

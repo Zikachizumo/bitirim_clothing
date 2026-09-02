@@ -73,6 +73,7 @@
         $('view-root').classList.remove('hidden');
         $('view-category').classList.add('hidden');
         $('item-card').classList.add('hidden');
+        hideTextures();
     }
 
     function renderCategories() {
@@ -99,6 +100,7 @@
         $('cat-title').textContent = category.label;
         $('cat-icon').innerHTML = ICONS[category.icon] || '';
         $('item-card').classList.add('hidden');
+        hideTextures();
 
         renderGrid();
         post('selectCategory', { category: category.key });
@@ -147,35 +149,57 @@
 
     function selectTile(entry, tile) {
         document.querySelectorAll('.tile.selected').forEach((t) => t.classList.remove('selected'));
-        document.querySelectorAll('.swatches').forEach((s) => s.remove());
         tile.classList.add('selected');
 
         S.entry = entry;
         S.drawable = entry.d;
         S.texture = entry.t && entry.t.length ? entry.t[0] : 0;
 
-        // Renk varyantlari (texture) — tile'in hemen altina serit olarak.
-        if (entry.t && entry.t.length > 1) {
-            const strip = document.createElement('div');
-            strip.className = 'swatches';
-            entry.t.forEach((tex) => {
-                const b = document.createElement('button');
-                b.className = 'swatch' + (tex === S.texture ? ' selected' : '');
-                b.textContent = tex;
-                b.addEventListener('click', (ev) => {
-                    ev.stopPropagation();
-                    S.texture = tex;
-                    strip.querySelectorAll('.swatch').forEach((x) => x.classList.remove('selected'));
-                    b.classList.add('selected');
-                    applyPreview();
-                });
-                strip.appendChild(b);
-            });
-            tile.parentNode.insertBefore(strip, tile.nextSibling);
-        }
-
+        renderTextures();
         showItemCard();
         applyPreview();
+    }
+
+    //  Sag ust renk paneli. Her satir bir doku varyanti: o rengin kendi
+    //  render'i + doku numarasi. Numara oyunun texture indeksi -- bir rengi
+    //  konusurken kullanilan sey ("headwear 3, doku 0-3-4").
+    function hideTextures() {
+        $('tex-panel').classList.add('hidden');
+        $('tex-list').innerHTML = '';
+    }
+
+    function renderTextures() {
+        const panel = $('tex-panel');
+        const list = $('tex-list');
+        const entry = S.entry;
+        list.innerHTML = '';
+
+        if (!entry || !entry.t || entry.t.length === 0) {
+            panel.classList.add('hidden');
+            return;
+        }
+
+        const slot = S.category.slot || S.category.key;
+        $('tex-sub').textContent = S.category.label + ' ' + entry.d;
+
+        entry.t.forEach((tex) => {
+            const row = document.createElement('div');
+            row.className = 'tex-row' + (tex === S.texture ? ' selected' : '');
+            //  Renk render'i yoksa satir yine calisir, sadece bos kutu kalir.
+            row.innerHTML =
+                `<img class="sw" src="images/tex/${slot}_${entry.d}_${tex}.png" alt="" ` +
+                    `onerror="this.style.visibility='hidden'">` +
+                `<span class="n">TEXTURE ${tex}</span>`;
+            row.addEventListener('click', () => {
+                S.texture = tex;
+                list.querySelectorAll('.tex-row').forEach((x) => x.classList.remove('selected'));
+                row.classList.add('selected');
+                applyPreview();
+            });
+            list.appendChild(row);
+        });
+
+        panel.classList.remove('hidden');
     }
 
     function applyPreview() {
@@ -294,7 +318,7 @@
         // Karakteri fareyle dondur — panelin DISINDA surukleme.
         let dragging = false, lastX = 0;
         document.addEventListener('mousedown', (e) => {
-            if (e.target.closest('.panel, .item-card, .cart-area, .cart-panel, .close-btn')) return;
+            if (e.target.closest('.panel, .tex-panel, .item-card, .cart-area, .cart-panel, .close-btn')) return;
             dragging = true;
             lastX = e.clientX;
         });
@@ -326,6 +350,7 @@
         } else if (msg.action === 'close') {
             $('app').classList.add('hidden');
             $('cart-panel').classList.add('hidden');
+            hideTextures();
         }
     });
 
@@ -334,7 +359,7 @@
     // --------------------------------------------------- tarayici DEBUG modu
     if (!IN_GAME) {
         const mk = (n) => Array.from({ length: n }, (_, i) => ({
-            d: i, t: Array.from({ length: 1 + (i % 4) }, (_, k) => k),
+            d: i, t: Array.from({ length: 1 + (i % 16) }, (_, k) => k),   // gercekte 1..26 arasi
         }));
         window.postMessage({
             action: 'open',

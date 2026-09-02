@@ -129,7 +129,14 @@ def _sample(img, uv, tw, th):
 
 
 def render(ydd_path, ytd_path, out_path, size=512, ss=3, margin=0.06,
-           yaw=0.0, quiet=False):
+           yaw=0.0, quiet=False, prefer=None):
+    """
+    `prefer`: doku adi oneki (kucuk harf). Doku VARYANTI render edilirken
+    gerekiyor -- mesh'in materyali her zaman 'a' varyantini isaret ediyor
+    ('jbib_diff_000_a_uni'), oysa 'b' varyantinin .ytd'sinde doku
+    'jbib_diff_000_b_uni' adiyla duruyor. Ad esitligi tutmaz, o yuzden
+    dogru varyantin adi disaridan veriliyor.
+    """
     ydr = ff.read_ydd(ydd_path).drawables[0].drawable
     meshes = ydr.primary_meshes                    # sadece HIGH LOD
     if not meshes:
@@ -140,7 +147,12 @@ def render(ydd_path, ytd_path, out_path, size=512, ss=3, margin=0.06,
     # Buyuk/kucuk harf duyarsiz: materyalde 'Jbib_diff_000_a_uni' yazarken
     # dosyada 'jbib_diff_000_a_uni' oluyor (olculdu, biker jbib_000).
     want = (meshes[0].material.primary_texture_name or '').lower()
-    tex = next((t for t in ytd.textures if (t.name or '').lower() == want), None)
+    tex = None
+    if prefer:
+        tex = next((t for t in ytd.textures
+                    if (t.name or '').lower().startswith(prefer)), None)
+    if tex is None:
+        tex = next((t for t in ytd.textures if (t.name or '').lower() == want), None)
 
     # Korlemesine ytd.textures[0]'a dusmek YASAK: oyle yapinca gozluk drawable 0
     # icin 'givemechecker' (GTA'nin eksik-doku yer tutucusu) secildi ve dama

@@ -31,14 +31,21 @@
                  sapka yerine kel kafa, gozluk yok, ust giysi yok
 
     'dama tahtasi'
-             Rockstar'in eksik-doku yer tutucusu. Bu varyantlarin doku dosyasi
-             64x64 iki renkli bir dama tahtasi, ayni parcanin gercek dokulari
-             ise 512x512. Olcut boyut: doku alani, parcanin en buyuk
-             varyantinin 1/16'sinden kucukse yer tutucudur
-             (tools/render/find_placeholder.py). 16 orneklem gorsel olarak
-             tek tek dogrulandi, ayrica ayni parcalarin isaretlenmeyen
-             varyantlari kontrol edildi -- hicbiri dama tahtasi degil.
-             423 doku, 46 parca. Hicbir parca tamamen dusmuyor.
+             Rockstar'in eksik-doku yer tutucusu: 64x64, iki renkli bir dama
+             tahtasi. Deger METIN ise parcanin butun renkleri dama demektir.
+             Tespit BAYT ESITLIGI ile yapiliyor, sezgisel degil: yer tutucu
+             oyunun her yerinde AYNI DOSYA -- 64x64 BC1, 2728 bayt,
+             sha1 cf8ff45d653c... Gercek bir giysi dokusu bununla bayt bayt
+             ayni olamaz, yani yanlis pozitif imkansiz
+             (tools/render/find_checker.py).
+
+             503 doku, 53 parca. Bunlarin 6'sinda BUTUN renkler dama tahtasi,
+             o parcalar komple cikti; kalan 47'sinde en az bir gercek renk var.
+
+             Ayrica butun 12.651 render dama benzerligi puaniyla siralandi ve
+             en yuksek 120'si tek tek incelendi: hepsi GERCEK desenli giysi
+             (ekose, puantiye, zebra, balikkilcigi). Yani bayt esitliginin
+             disinda kacan dama tahtasi YOK.
 
     'gorsel' Oyun icinde GORSEL OLARAK bozuk oldugu icin cikarilanlar.
              Bu karar tamamen kullaniciya ait -- agent oyunu goremez.
@@ -55,12 +62,14 @@ return {
         headwear = {
             [3]   = { 0, 3, 4, 5, 6, 7, why = 'dama tahtasi' },
             [4]   = { 2, 3, 4, 5, 6, 7, why = 'dama tahtasi' },
+            [5]   = { 2, 3, 4, 5, 6, 7, why = 'dama tahtasi' },
+            [8]   = 'dama tahtasi -- butun renkler',
             [9]   = { 0, 1, 2, 3, 4, 6, why = 'dama tahtasi' },
             [10]  = { 0, 1, 2, 3, 4, 6, why = 'dama tahtasi' },
             [11]  = { 0, 2, 4, 5, 7, why = 'dama tahtasi' },
             [12]  = { 3, 5, why = 'dama tahtasi' },
-            [214] = 'bos',                      -- p_mp_m_2024_01 p_head_000
-            [215] = 'bos',                      -- p_mp_m_2024_01 p_head_001
+            [214] = 'bos',                    -- p_mp_m_2024_01 p_head_000
+            [215] = 'bos',                    -- p_mp_m_2024_01 p_head_001
         },
         outerwear = {
             [0]   = { 6, 9, 10, 12, 13, 14, 15, why = 'dama tahtasi' },
@@ -75,8 +84,7 @@ return {
             [11]  = { 2, 3, 4, 5, 6, 8, 9, 10, 11, 12, 13, 15, why = 'dama tahtasi' },
             [12]  = { 12, 13, 14, 15, why = 'dama tahtasi' },
             [13]  = { 4, 6, 7, 8, 9, 10, 11, 12, 14, 15, why = 'dama tahtasi' },
-            [307] = { 13, why = 'dama tahtasi' },
-            [478] = 'bos',                      -- mp_m_2023_01 jbib_036
+            [478] = 'bos',                    -- mp_m_2023_01 jbib_036
         },
         tshirts = {
             [0]  = { 6, 9, 10, 12, 13, 14, 15, why = 'dama tahtasi' },
@@ -97,6 +105,7 @@ return {
             [6]  = { 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, why = 'dama tahtasi' },
             [8]  = { 1, 2, 5, 6, 7, 8, 9, 10, 11, 12, 13, 15, why = 'dama tahtasi' },
             [10] = { 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, why = 'dama tahtasi' },
+            [11] = 'dama tahtasi -- butun renkler',
             [12] = { 1, 2, 3, 6, 8, 9, 10, 11, 13, 14, 15, why = 'dama tahtasi' },
             [13] = { 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, why = 'dama tahtasi' },
             [14] = { 2, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, why = 'dama tahtasi' },
@@ -109,12 +118,17 @@ return {
             [6]  = { 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, why = 'dama tahtasi' },
             [10] = { 1, 2, 3, 4, 5, 6, 8, 9, 10, 11, 13, 15, why = 'dama tahtasi' },
             [11] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 13, why = 'dama tahtasi' },
-            [33] = 'bos',                      -- male_apt01 feet_000
-            [68] = { 5, 6, 9, 10, why = 'dama tahtasi' },
+            [13] = 'dama tahtasi -- butun renkler',
+            [33] = 'bos',                    -- male_apt01 feet_000
         },
         glasses = {
-            [49] = 'bos',                      -- p_mp_m_2023_01 p_eyes_002
-            [50] = 'bos',                      -- p_mp_m_2023_01 p_eyes_003
+            [0]  = { 0, 1, 2, 3, 4, 5, 6, 7, why = 'dama tahtasi' },
+            [1]  = { 0, 2, 3, 4, 5, 6, 7, why = 'dama tahtasi' },
+            [6]  = 'dama tahtasi -- butun renkler',
+            [11] = 'dama tahtasi -- butun renkler',
+            [14] = 'dama tahtasi -- butun renkler',
+            [49] = 'bos',                    -- p_mp_m_2023_01 p_eyes_002
+            [50] = 'bos',                    -- p_mp_m_2023_01 p_eyes_003
         },
     },
 }

@@ -150,6 +150,34 @@ karşılaştırıldı — şapka 61 (yeşil bantlı siyah fötr), şapka 64 (mav
 fötr), ayakkabı 17 (kırmızı-yeşil elf ayakkabısı) ve ayakkabı 40 (mavi
 spor ayakkabı) birebir tuttu.
 
+### Dama tahtası tespiti: bayt eşitliği
+
+Rockstar'ın eksik-doku yer tutucusu oyunun **her yerinde aynı dosya**:
+64x64 BC1, 2728 bayt, `sha1 cf8ff45d653c…`. `find_checker.py` her dokunun ham
+baytlarını hash'ler ve aynı hash'i paylaşanları gruplar. Gerçek bir giysi
+dokusu yer tutucuyla bayt bayt aynı olamaz — **yanlış pozitif imkânsız**.
+
+Erkek tarafında **503 doku, 53 parça**. Altısında bütün renkler yer tutucu.
+
+Denenip yetersiz kalan ölçütler:
+
+| ölçüt | sonuç |
+|---|---|
+| benzersiz renk sayısı < 8 | **çalışmadı** — BC1 + gölgelendirme, iki renkli bir damayı 671 renge çıkarıyor |
+| boyut oranı ≤ 1/16 | 423 buldu, **80'ini kaçırdı** — parçanın bütün varyantları yer tutucuysa kıyas edilecek büyük yok |
+| bayt eşitliği | **503, tam** |
+
+Ayrıca 12.651 render "dama benzerliği" puanıyla sıralandı (ikilileştirilmiş
+parlaklıkta komşu piksel işaret değişimi oranı) ve en yüksek 120'si tek tek
+incelendi: hepsi **gerçek desenli giysi** (ekose, puantiye, zebra,
+balıkkılcığı). Bayt eşitliğinin kaçırdığı dama tahtası yok.
+
+### Tile görseli hayatta kalan dokudan
+
+Tile görseli her zaman doku 0'dan üretiliyordu. 11 parçada doku 0'ın kendisi
+dama tahtası çıktı — o parçalarda tile de dama gösteriyordu. `retile.py`
+onları hayatta kalan ilk dokudan yeniden çizer.
+
 ### Boş yer tutucular (6 parça, katalogdan çıkarıldı)
 
 `data/removed.lua` (`'bos'` sebebiyle). Bunlar oyunun listesinde görünen ama giyilince ekranda

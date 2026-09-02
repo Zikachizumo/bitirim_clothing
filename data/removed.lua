@@ -68,6 +68,7 @@ return {
             [10]  = { 0, 1, 2, 3, 4, 6, why = 'dama tahtasi' },
             [11]  = { 0, 2, 4, 5, 7, why = 'dama tahtasi' },
             [12]  = { 3, 5, why = 'dama tahtasi' },
+            [121] = 'gorsel: duz renkli levha, giysi silueti yok',
             [214] = 'bos',                    -- p_mp_m_2024_01 p_head_000
             [215] = 'bos',                    -- p_mp_m_2024_01 p_head_001
         },
@@ -84,6 +85,7 @@ return {
             [11]  = { 2, 3, 4, 5, 6, 8, 9, 10, 11, 12, 13, 15, why = 'dama tahtasi' },
             [12]  = { 12, 13, 14, 15, why = 'dama tahtasi' },
             [13]  = { 4, 6, 7, 8, 9, 10, 11, 12, 14, 15, why = 'dama tahtasi' },
+            [91]  = 'gorsel: duz renkli levha, giysi silueti yok',
             [478] = 'bos',                    -- mp_m_2023_01 jbib_036
         },
         tshirts = {
@@ -98,6 +100,7 @@ return {
             [12] = { 12, 13, 14, 15, why = 'dama tahtasi' },
             [13] = { 4, 6, 7, 8, 9, 10, 11, 12, 14, 15, why = 'dama tahtasi' },
             [14] = { 2, 9, 10, 13, 15, why = 'dama tahtasi' },
+            [57] = 'gorsel: duz renkli levha, giysi silueti yok',
         },
         pants = {
             [2]  = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 13, 14, 15, why = 'dama tahtasi' },
@@ -109,6 +112,7 @@ return {
             [12] = { 1, 2, 3, 6, 8, 9, 10, 11, 13, 14, 15, why = 'dama tahtasi' },
             [13] = { 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, why = 'dama tahtasi' },
             [14] = { 2, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, why = 'dama tahtasi' },
+            [44] = 'gorsel: duz renkli levha, giysi silueti yok',
         },
         shoes = {
             [0]  = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, why = 'dama tahtasi' },
@@ -122,7 +126,7 @@ return {
             [33] = 'bos',                    -- male_apt01 feet_000
         },
         glasses = {
-            [0]  = { 0, 1, 2, 3, 4, 5, 6, 7, why = 'dama tahtasi' },
+            [0]  = 'gorsel: duz renkli levha, giysi silueti yok',
             [1]  = { 0, 2, 3, 4, 5, 6, 7, why = 'dama tahtasi' },
             [6]  = 'dama tahtasi -- butun renkler',
             [11] = 'dama tahtasi -- butun renkler',

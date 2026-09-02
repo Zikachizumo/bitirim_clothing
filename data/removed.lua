@@ -709,8 +709,13 @@ return {
             [6]  = 'dama tahtasi -- butun renkler',
             [11] = 'dama tahtasi -- butun renkler',
             [14] = 'dama tahtasi -- butun renkler',
+            [26] = 'gorsel: kullanici listesi',
+            [27] = 'gorsel: kullanici listesi',
+            [40] = 'gorsel: kullanici listesi',
             [49] = 'bos',                    -- p_mp_m_2023_01 p_eyes_002
             [50] = 'bos',                    -- p_mp_m_2023_01 p_eyes_003
+            [52] = 'gorsel: kullanici listesi',
+            [55] = 'gorsel: kullanici listesi',
         },
     },
 }

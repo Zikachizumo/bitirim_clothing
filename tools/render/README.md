@@ -253,6 +253,25 @@ değiştirebiliyor.** `jbib_000` varyant `a` kolsuz atlet, varyant `b` kollu
 tişört — aynı mesh, farklı alfa maskesi. Yani "aynı parça farklı renk"
 varsayımı yanlış.
 
+### Prop'lar bileşenlerden farklı eksende duruyor
+
+Kamera modelin **Z** eksenini "yukarı" kabul ediyor. `jbib`/`lowr`/`feet` için
+bu doğru, ama `p_head`/`p_eyes` için değil — şapkalar ve gözlükler **yan
+yatıyordu** (gözlüklerin iki camı yan yana değil alt alta çıkıyordu).
+
+Prop'un kendi **X** ekseni yukarıyı gösteriyor. Doğru dönüşüm:
+
+```
+yeni_x = -eski_z     yeni_y = eski_y     yeni_z = eski_x
+```
+
+`render_ydd.PROP_BASIS` bunu tutar, `basis_for(prefix)` `p_` ile başlayan
+öneklerde uygular. Açı yine `yaw=180` — bileşenlerle aynı önden görünüm.
+
+Nasıl bulundu: bir fötr şapka 24 dönme kombinasyonunda (determinantı +1 olan
+bütün eksen permütasyonları) render edilip gözle seçildi, sonra kova şapka,
+ekose fötr ve iki gözlükle doğrulandı; ayrıca yaw 0/90/180/270 karşılaştırıldı.
+
 ### Harf ↔ doku indeksi
 
 Dosyalar varyantı harfle adlandırıyor (`jbib_diff_000_a_uni`), oyun ise

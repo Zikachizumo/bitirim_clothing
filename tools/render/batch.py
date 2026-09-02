@@ -188,7 +188,8 @@ def main():
         for _letter, tar, te in sorted(ytds[k], key=lambda x: x[0]):
             try:
                 open(tp, 'wb').write(tar.read_entry_standalone(te))
-                render_ydd.render(yp, tp, out, size=512, yaw=180, quiet=True)
+                render_ydd.render(yp, tp, out, size=512, yaw=180, quiet=True,
+                                  basis=render_ydd.basis_for(k[1]))
                 done = True
                 break
             except Exception as ex:

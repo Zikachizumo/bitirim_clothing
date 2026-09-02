@@ -109,7 +109,8 @@ def main():
                 try:
                     open(tp, 'wb').write(tar.read_entry_standalone(te))
                     render_ydd.render(yp, tp, out, size=size, yaw=180,
-                                      quiet=True, prefer=want_name)
+                                      quiet=True, prefer=want_name,
+                                      basis=render_ydd.basis_for(prefix))
                     done = True
                     break
                 except Exception:

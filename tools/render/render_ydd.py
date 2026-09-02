@@ -107,6 +107,27 @@ def decode_texture(tex):
     return np.clip(px[:h, :w], 0, 255).astype(np.uint8)
 
 
+# ---------------------------------------------------------- prop ekseni
+
+#  PROP'LAR (sapka, gozluk) BILESENLERDEN FARKLI EKSENDE DURUYOR.
+#  Kamera modelin Z eksenini "yukari" kabul ediyor; jbib/lowr/feet icin bu
+#  dogru ama p_head/p_eyes icin degil -- sapkalar ve gozlukler yan yatiyordu.
+#  Prop'un kendi X ekseni yukariyi gosteriyor.
+#
+#  Olculdu: bir fötr sapka (hat 61) 24 dondurme kombinasyonunda render edilip
+#  gozle secildi, sonra kova sapka, ekose fotr ve iki gozlukle dogrulandi.
+#  Dogru donusum: yeni_x = -eski_z, yeni_y = eski_y, yeni_z = eski_x.
+#  Aci yine yaw=180 (bilesenlerle ayni "onden gorunum").
+PROP_BASIS = np.array([[0.0, 0.0, -1.0],
+                       [0.0, 1.0,  0.0],
+                       [1.0, 0.0,  0.0]], np.float32)
+
+
+def basis_for(prefix):
+    """Dosya oneki -> eksen matrisi. Prop'lar 'p_' ile basliyor."""
+    return PROP_BASIS if prefix.startswith('p_') else None
+
+
 # ------------------------------------------------------------- rasterizer
 
 def _sample(img, uv, tw, th):
@@ -129,7 +150,7 @@ def _sample(img, uv, tw, th):
 
 
 def render(ydd_path, ytd_path, out_path, size=512, ss=3, margin=0.06,
-           yaw=0.0, quiet=False, prefer=None):
+           yaw=0.0, quiet=False, prefer=None, basis=None):
     """
     `prefer`: doku adi oneki (kucuk harf). Doku VARYANTI render edilirken
     gerekiyor -- mesh'in materyali her zaman 'a' varyantini isaret ediyor
@@ -185,6 +206,15 @@ def render(ydd_path, ytd_path, out_path, size=512, ss=3, margin=0.06,
     N = np.concatenate(Ns)
     UV = np.concatenate(UVs)
     F = np.concatenate(Fs)
+
+    # PROP'LARIN KENDI EKSENI VAR. Kamera modelin Z eksenini "yukari" kabul
+    # ediyor; bu bilesenlerde (jbib/lowr/feet) dogru ama prop'larda degil --
+    # sapka ve gozlukler yan yatiyordu.  3x3 matrisi, kamera
+    # hesabindan ONCE modeli dogru eksene cevirir.
+    if basis is not None:
+        M = np.asarray(basis, np.float32)
+        P = P @ M.T
+        N = N @ M.T
 
     # --- kamera: ortografik, Z ekseni etrafinda yaw ile donuyor.
     # GTA ped uzayi OLCULDU: X yanlamasina, Y derinlik, Z yukari.

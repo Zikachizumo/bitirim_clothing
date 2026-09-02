@@ -50,7 +50,8 @@ def main():
             try:
                 open(tp, 'wb').write(tar.read_entry_standalone(te))
                 render_ydd.render(yp, tp, out, size=size, yaw=180, quiet=True,
-                                  prefer='%s_diff_%03d_%s' % (prefix, num, letter))
+                                  prefer='%s_diff_%03d_%s' % (prefix, num, letter),
+                                  basis=render_ydd.basis_for(prefix))
                 done = True; break
             except Exception as ex:
                 print('  HATA %s %d doku %d: %s' % (slot, drawable, tex, ex))

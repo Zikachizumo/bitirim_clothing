@@ -211,13 +211,32 @@ end
 ]]
 function Compat.applyTop(ped, drawable, texture)
     local Apply = BitirimClothing.Apply
+
+    -- GECICI TRACE (talimat madde 18/19): kol cozumunu ve read-back'i F8'e yazar.
+    -- Kapatmak icin Config.DebugArms = false yap ya da bu blogu kaldir.
+    local trace = (Config.DebugArms ~= false)
+    if trace then
+        print(('[KOLTRACE] UI SELECT  top=%d tex=%d  (component 3 ONCE: drawable=%d texture=%d)')
+            :format(drawable, texture, GetPedDrawableVariation(ped, ARMS), GetPedTextureVariation(ped, ARMS)))
+    end
+
     if not Apply.component(ped, TOP, drawable, texture) then
         return false, 'gecersiz ust giysi'
     end
 
     local arms, source = Compat.resolveArms(ped, drawable, texture)
+    if trace then
+        print(('[KOLTRACE] RESOLVED   arms=%s  kaynak=%s')
+            :format(tostring(arms), tostring(source)))
+    end
     if arms then
-        Apply.component(ped, ARMS, arms, 0)
+        local ok = Apply.component(ped, ARMS, arms, 0)
+        if trace then
+            print(('[KOLTRACE] APPLY      arms=%d ok=%s  ->  READ-BACK component 3: drawable=%d texture=%d')
+                :format(arms, tostring(ok), GetPedDrawableVariation(ped, ARMS), GetPedTextureVariation(ped, ARMS)))
+        end
+    elseif trace then
+        print('[KOLTRACE] APPLY      kol cozulemedi -> component 3 DOKUNULMADI (spawn degeri kaliyor)')
     end
 
     return true, source

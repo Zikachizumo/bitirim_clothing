@@ -104,9 +104,16 @@ Config.Underwear = {
     Kadin -1: HIC OLCULMEDI -> kola dokunulmaz. Tahminle doldurulmaz;
     kadin karakterle olcup buraya gec.
 ]]
+-- DEGISIKLIK 2026-09-03: male 135 -> 0.
+-- 135 = biker CIPLAK KOL + MAVI ELDIVEN (render ile dogrulandi). Compat DB'si
+-- yalnizca top 14-24'u kapsiyor; base-ped tisort/atlet (top 0-13) icin ne DB
+-- kurali ne de oyun forced-arms'i var, o yuzden son care buraya dusuyordu ve
+-- her tisorte MAVI ELDIVEN + omuzda ten tasmasi cikiyordu.
+-- 0 = base ped CIPLAK KOL (eldivensiz, kisa) -- render ile dogrulandi, tisort
+-- ile vanilla eslesme. Jacket'lar (14-24) etkilenmez, onlar layer 1/2 kullanir.
 Config.DefaultArms = {
-    male   = { drawable = 135, texture = 0 },
-    female = { drawable = -1,  texture = 0 },
+    male   = { drawable = 0, texture = 0 },
+    female = { drawable = -1, texture = 0 },
 }
 
 --[[

@@ -51,6 +51,8 @@ client_scripts {
     'client/probe.lua',
     'client/capture.lua',
     'client/dump.lua',
+    -- GECICI teshis: /kiyafethata read-back komutu. Isi bitince sil.
+    'client/clothingdebug.lua',
 }
 
 server_scripts {

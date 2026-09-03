@@ -6,3 +6,7 @@ node_modules/
 web/images/*.png
 web/images/tex/*.png
 web/dump/*.json
+
+# Python derleme onbellegi (render araclari)
+__pycache__/
+*.pyc

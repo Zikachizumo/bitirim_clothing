@@ -81,7 +81,22 @@ local function scanComponent(ped, componentId)
     if type(drawableCount) ~= 'number' or drawableCount <= 0 then return out end
 
     for d = 0, drawableCount - 1 do
-      if not isBaseState(componentId, d) then
+      --[[
+          DEGISIKLIK 2026-09-03: isBaseState filtresi KAPATILDI.
+
+          Istek: liste 0-1-2-3 diye kesintisiz gitsin, hicbir numara
+          atlanmasin. Bu filtre her kategoride tam bir numara dusuruyordu
+          (ust 15, tisort 15, pantolon 21, ayakkabi 34 -- Constants.BaseState)
+          ve listede gorunur bir bosluk birakiyordu.
+
+          Geri acmak icin asagidaki kosulu tekrar etkinlestir:
+              if not isBaseState(componentId, d) then ... end
+          Fonksiyon yerinde duruyor, sadece cagrilmiyor.
+
+          UYARI: taban durumu "hicbir sey giyilmemis" demek. Listede artik
+          gorunuyor ve satin alinabilir bir urun degil.
+      ]]
+      if true then
         local textures = {}
         local textureCount = GetNumberOfPedTextureVariations(ped, componentId, d) or 0
         for t = 0, textureCount - 1 do

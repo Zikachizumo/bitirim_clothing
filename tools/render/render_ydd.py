@@ -279,7 +279,15 @@ def render(ydd_path, ytd_path, out_path, size=512, ss=3, margin=0.06,
 
         texel = _sample(img, b @ UV[tri], tw, th)
 
-        vis = texel[:, 3] > 127                    # alpha-cutout
+        # DEGISIKLIK 2026-09-03: esik 127 -> 8.
+        # GTA ped diffuse alfasi GEOMETRI cutout'u DEGIL, coğu zaman
+        # golgeleme/palet maskesidir. jbib_000 kol bolgesi alfa 55-127 tasiyor;
+        # 127 esigi kollari kesip tank gibi gosteriyordu, oyun ise opak
+        # renderliyor -> tile kolsuz, ped kisa kollu (uyumsuzluk).
+        # Gercek cutout (BC1 punch-through) alfa = 0'dir; > 8 onlari yine keser
+        # (or. jacket_2 kareli tank alfa<=8 -> hala kolsuz, dogru), ama 55+
+        # golgeli bolgeleri gosterir. Olculdu: jbib_000 -> kisa kollu tisort.
+        vis = texel[:, 3] > 8                       # yalniz gercek saydamligi kes
         if not vis.any():
             continue
         b, d, yy, xx, texel = b[vis], d[vis], yy[vis], xx[vis], texel[vis]

@@ -15,6 +15,44 @@ local Constants = BitirimClothing.Constants
 local rulesCache = {}
 local rulesLoaded = false
 
+local ARMS = Constants.Component.ARMS
+local TOP  = Constants.Component.TOP
+
+--[[
+    Ust -> Kol indeksi. client/compat.lua'nin katman 2 indeksinin server
+    kopyasi: satin alma aninda parcanin kolunu metadata'ya yazabilmek icin
+    burada da gerekiyor (bkz. armsFor).
+
+      verified[topDrawable][topTexture][armsDrawable] = priority
+      rejected[topDrawable][topTexture][armsDrawable] = true
+    topTexture -1 = "her renk" sentinel'i.
+]]
+local armsIndex = { verified = {}, rejected = {} }
+
+local function bucket(tbl, drawable, texture)
+    tbl[drawable] = tbl[drawable] or {}
+    tbl[drawable][texture] = tbl[drawable][texture] or {}
+    return tbl[drawable][texture]
+end
+
+local function indexArmsRules(rows)
+    armsIndex = { verified = {}, rejected = {} }
+    for _, r in ipairs(rows) do
+        if tonumber(r.from_component) == TOP and tonumber(r.to_component) == ARMS then
+            local fd = tonumber(r.from_drawable)
+            local ft = tonumber(r.from_texture) or -1
+            local td = tonumber(r.to_drawable)
+            if fd and td then
+                if r.status == 'verified' then
+                    bucket(armsIndex.verified, fd, ft)[td] = tonumber(r.priority) or 0
+                elseif r.status == 'rejected' then
+                    bucket(armsIndex.rejected, fd, ft)[td] = true
+                end
+            end
+        end
+    end
+end
+
 local function loadRules()
     local ok, rows = pcall(MySQL.query.await, [[
         SELECT from_component, from_drawable, from_texture,
@@ -27,11 +65,13 @@ local function loadRules()
         print('^3[bitirim_clothing] Uyumluluk tablosu okunamadi -- katman 2 devre disi.^7')
         print('^3data/compatibility_rules.sql dosyasini iceri aktarmayi unutma.^7')
         rulesCache, rulesLoaded = {}, true
+        indexArmsRules(rulesCache)
         return 0
     end
 
     rulesCache = rows
     rulesLoaded = true
+    indexArmsRules(rows)
     print(('^2[bitirim_clothing] %d uyumluluk kurali yuklendi.^7'):format(#rows))
     return #rows
 end
@@ -78,6 +118,107 @@ local function takeMoney(player, account, total, reason)
     return true
 end
 
+---------------------------------------------------------------------------
+-- Satin alinan parcanin GORSELI ve KOLU
+---------------------------------------------------------------------------
+
+-- Global kol blacklist'i (client/init.lua ile ayni dosya, ayni amac).
+local armsBlacklist = { male = {}, female = {} }
+
+do
+    local ok, data = pcall(lib.load, 'data.arms_blacklist')
+    if ok and type(data) == 'table' then
+        for _, gender in ipairs({ 'male', 'female' }) do
+            for _, drawable in ipairs(data[gender] or {}) do
+                armsBlacklist[gender][drawable] = true
+            end
+        end
+    else
+        print('^1[bitirim_clothing] data/arms_blacklist.lua okunamadi -- kol suzgeci devre disi.^7')
+    end
+end
+
+--[[
+    Envanter ikonu. RENGE OZEL render varsa o, yoksa parcanin karti.
+
+      web/images/<slot>_<drawable>.png        parcanin karti -- her rengi ayni
+      web/images/tex/<slot>_<d>_<t>.png       o rengin kendi render'i
+
+    Oyunun kendi katalogunda ikincisi YOK (1384 kart, 0 renk render'i), bu
+    yuzden kart'a dusmek dogru varsayilan. Ama BitirimClothingCreator export'u
+    renk render'lerini de yaziyor ve o zaman iki farkli renk cantada AYNI
+    gorunuyordu -- tek fark drawable oldugu icin. Dosyaya bakip karar
+    veriyoruz: LoadResourceFile eksik dosyada nil doner. Sonuc onbellege
+    alinir, ayni parca her satista yeniden okunmaz.
+]]
+local imageCache = {}
+
+local function imageUrl(slot, drawable, texture)
+    local key = ('%s|%d|%d'):format(slot, drawable, texture)
+    local cached = imageCache[key]
+    if cached then return cached end
+
+    local resource = GetCurrentResourceName()
+    local perTexture = ('web/images/tex/%s_%d_%d.png'):format(slot, drawable, texture)
+    local url
+
+    if LoadResourceFile(resource, perTexture) then
+        url = ('nui://%s/%s'):format(resource, perTexture)
+    else
+        url = ('nui://%s/web/images/%s_%d.png'):format(resource, slot, drawable)
+    end
+
+    imageCache[key] = url
+    return url
+end
+
+--[[
+    Bu ust giysinin kolu (component 3), uyumluluk tablosundan.
+
+    NEDEN METADATA'YA YAZILIYOR: envanter bir ustu giydirdiginde kolu sirayla
+    su uc kaynaktan ariyor (ox_inventory/modules/bitirim/equipment_client.lua
+    -> applyGlovesSlot):
+        1) wear.arms                       <- burada yazdigimiz deger
+        2) oyunun forced-component verisi  <- base-ped parcalarinda BOS
+        3) clothing.defaultArms            <- tek bir genel deger
+    Uyumluluk tablosu o kod yolunda HIC okunmuyor -- magaza onizlemesi dogru
+    kolu gosterse bile cantadan giyilen ayni parca varsayilan kolla cikiyordu.
+    Degeri satin alma aninda yazmak iki yolu ayni cevaba baglar.
+
+    Secim client/compat.lua katman 2 ile birebir ayni: once tam texture
+    eslesmesi sonra -1 ("her renk"), rejected veto eder, en dusuk priority
+    kazanir, blacklist'teki kol elenir.
+]]
+local function armsFor(gender, drawable, texture)
+    if not rulesLoaded then loadRules() end
+
+    local function rejected(arms)
+        for _, tex in ipairs({ texture, -1 }) do
+            local b = armsIndex.rejected[drawable] and armsIndex.rejected[drawable][tex]
+            if b and b[arms] then return true end
+        end
+        return false
+    end
+
+    for _, tex in ipairs({ texture, -1 }) do
+        local candidates = armsIndex.verified[drawable] and armsIndex.verified[drawable][tex]
+        local best, bestPriority
+
+        if candidates then
+            for arms, priority in pairs(candidates) do
+                if not rejected(arms) and not armsBlacklist[gender][arms]
+                   and (bestPriority == nil or priority < bestPriority) then
+                    best, bestPriority = arms, priority
+                end
+            end
+        end
+
+        if best then return best end
+    end
+
+    return nil
+end
+
 --[[
     Bir sepet satirini bitirim_inventory'nin bekledigi metadata'ya cevir.
 
@@ -87,15 +228,27 @@ end
     `wear.slot` anahtarlari envanterin data/bitirim_clothing.lua > slots
     tablosuyla BIREBIR ayni olmak zorunda.
 ]]
-local function buildMetadata(category, drawable, texture)
+local function buildMetadata(gender, category, drawable, texture)
+    local wear = {
+        slot     = category.slot,
+        drawable = drawable,
+        texture  = texture,
+    }
+
+    -- Kol yalnizca UST GIYSI icin anlamli; envanter de wear.arms'i sadece
+    -- 'jacket' slotunda okuyor. Kural yoksa alan hic yazilmaz, boylece
+    -- envanterin kendi zinciri (oyun verisi -> defaultArms) devreye girer.
+    if category.kind == 'component' and category.id == TOP then
+        local arms = armsFor(gender, drawable, texture)
+        if arms then
+            wear.arms = { drawable = arms, texture = 0 }
+        end
+    end
+
     return {
-        wear = {
-            slot     = category.slot,
-            drawable = drawable,
-            texture  = texture,
-        },
+        wear     = wear,
         label    = category.itemLabel or category.label,
-        imageurl = ('nui://bitirim_clothing/web/images/%s_%d.png'):format(category.slot, drawable),
+        imageurl = imageUrl(category.slot, drawable, texture),
     }
 end
 
@@ -152,9 +305,15 @@ lib.callback.register('bitirim_clothing:buy', function(source, cart)
     end
 
     -- 5) Parcalari ver. Bir tanesi bile eklenemezse TAMAMI iade edilir.
+    --
+    -- Cinsiyet ped'in KENDI modelinden okunuyor, client'in soyledigine gore
+    -- degil: kol blacklist'i cinsiyete gore ayriliyor ve satin alma yolunda
+    -- client'tan gelen hicbir seye guvenmiyoruz.
+    local gender = Constants.genderKey(GetPlayerPed(src))
+
     local given = 0
     for _, line in ipairs(lines) do
-        local metadata = buildMetadata(line.category, line.drawable, line.texture)
+        local metadata = buildMetadata(gender, line.category, line.drawable, line.texture)
         local added = exports.ox_inventory:AddItem(src, itemName, 1, metadata)
         if added then
             given = given + 1

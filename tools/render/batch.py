@@ -23,10 +23,14 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import fivefury as ff
 import render_ydd
 
-# FiveM b3323 LEGACY GTA V uzerinde calisiyor -- kaynak da o olmali.
+# Sunucu ENHANCED'a gecti (2026-09-08), kaynak da Enhanced olmali.
+# Legacy kurulumda gen9'a ozel 87 parcanin .ydd'si 497 baytlik BOS bir kabuk
+# (olculdu: mpSum2'de normal klasorde mesh 117 KB dolu, ayni parcanin _g9ec
+# klasorunde 497 bayt). O parcalar Legacy'de hic yok, Enhanced'ta gercek.
+# Legacy'den render etmek gerekirse: GTA_DIR="...\Grand Theft Auto V"
 GTA = os.environ.get('GTA_DIR',
     os.path.join('D:', os.sep, 'SteamLibrary', 'steamapps', 'common',
-                 'Grand Theft Auto V'))
+                 'Grand Theft Auto V Enhanced'))
 DLC = os.path.join(GTA, 'update', 'x64', 'dlcpacks')
 
 # slot -> dosya oneki

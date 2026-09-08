@@ -123,16 +123,58 @@ klasöründe görünen dosya sayısı 10'dan 94'e, `mp_m_heist4` 7'den 59'a çı
 **Ders:** "paket = dlc.rpf" bir varsayımdı ve dört yerde yanlıştı. Paket
 klasöründeki `dlc*.rpf` dosyalarının hepsi açılmalı.
 
-### Kaynak: Legacy kurulum, Enhanced değil
+### Kaynak: ENHANCED kurulum (2026-09-08'den beri)
 
-Sunucu FiveM **b3323** üzerinde çalışıyor, o da **Legacy** GTA V'i kullanıyor;
-araçlar artık `Grand Theft Auto V` klasörünü okuyor (`GTA_DIR` ile
-değiştirilebilir). Enhanced kurulumu bu dört pakette giysi arşivi hiç
-içermiyor — `mptuner/dlc.rpf` içinde `mptuner_female.rpf` var ama erkek
-karşılığı yok.
+Önceden Legacy'den render ediliyordu, çünkü sunucu `sv_enforceGameBuild 3323`
+ile **Legacy** çalışıyordu. Test sunucusu Enhanced'a taşınınca kaynak da
+`Grand Theft Auto V Enhanced` oldu (`GTA_DIR` ile değiştirilebilir).
 
-shop.meta iki kurulumda birebir aynı çıktı (44 dosya, 16.471 kayıt), yani
-daha önce Enhanced'dan kurulan eşleme geçerliliğini koruyor.
+**Eski "Enhanced'ta bu dört pakette giysi yok" notu yanlıştı.** Sadece
+`dlc.rpf`'e bakıldığı için öyle görünmüştü; Enhanced `mptuner` giysilerini
+`dlc1.rpf`'te tutuyor (Legacy'de tersi: `dlc.rpf` 3,48 GB + `dlc1.rpf` 47 MB,
+Enhanced'ta 1,43 GB + 938 MB). Tüm `dlc*.rpf`'ler tarandığında iki kurulumda
+da istenen **1390 parçanın 1390'ı** bulunuyor.
+
+#### İki kurulum ölçüldü, tek anlamlı fark gen9 parçaları
+
+| ölçüm | sonuç |
+| --- | --- |
+| bulunan parça | 1390 / 1390, ikisinde de |
+| doku boyutu + formatı | 12.659 dokunun hepsinde aynı (BC3 1886, BC1 10761, A8 10, BC4 2) |
+| damalı yer tutucu doku | ikisinde de tam **519**, aynı (parça, doku) çiftleri |
+| render edilen kare | 1384'ün **1076'sı piksel piksel aynı**, 1366'sı gözle ayırt edilemez |
+| gerçekten farklı | **18 kare** |
+
+18 farkın 6'sı boş şapka (aşağı bkz.), 12'si küçük renk kayması
+(jacket 384 pembe/siyah, 6 tişörtün yaka rengi). shop.meta zaten iki
+kurulumda birebir aynıydı (44 dosya, 16.471 kayıt), yani eşleme değişmedi.
+
+### Legacy gen9'a özel parçaları BOŞ KABUK olarak taşıyor
+
+`mp2023_01`, `mp2024_02`, `mp2025_01` ve `*_g9ec` paketlerindeki bazı
+parçaların `.ydd`'si Legacy'de **497 bayt** — içinde geometri yok. Enhanced'ta
+aynı dosya gerçek mesh (örn. `p_head_003.ydd`: 497 B → 121.330 B).
+
+Kanıt tahmin değil, aynı pakette karşılaştırma: `mpSum2/dlc.rpf` içinde
+`mp_m_freemode_01_p_mp_m_sum2/p_head_003.ydd` **117 KB dolu**, ama
+`mpSum2_G9EC/dlc.rpf` içindeki `..._sum2_g9ec/p_head_003.ydd` **497 bayt**.
+Yani Legacy, gen9'a özel içeriği indeksler kaysın diye boş dosyayla
+dolduruyor.
+
+Böyle **87 parça** var: 50 üst giysi, 16 pantolon, 8 ayakkabı, 7 şapka,
+6 tişört. Legacy'de render'ları boş çıktığı için kullanıcı listelerinde
+"kaldır" işaretlenmişlerdi. Enhanced'a geçince 86'sı `data/removed.lua`'dan
+çıkarıldı (`tools/render/restore_g9.py`); HEADWEAR 8 kaldı, çünkü onun
+dokuları Enhanced'ta da damalı yer tutucu.
+
+### İki kurulumu karşılaştıran araçlar
+
+```bash
+python cmp_index.py map8            # hangi parça hangi kurulumda, .ydd boyutu
+python cmp_tex.py  map8 dump/male.json   # doku boyutu/formatı/bayt eşitliği
+python diffrank.py out out_enh      # render edilen kareleri piksel piksel
+python hunt_file.py p_head_003      # bir dosya adını tüm kurulumda ara
+```
 
 ### shop.meta'nın kapsamadığı 12 parça
 
@@ -174,9 +216,19 @@ balıkkılcığı). Bayt eşitliğinin kaçırdığı dama tahtası yok.
 
 ### Tile görseli hayatta kalan dokudan
 
-Tile görseli her zaman doku 0'dan üretiliyordu. 11 parçada doku 0'ın kendisi
-dama tahtası çıktı — o parçalarda tile de dama gösteriyordu. `retile.py`
-onları hayatta kalan ilk dokudan yeniden çizer.
+Tile görseli her zaman doku 0'dan üretiliyordu. Bazı parçalarda doku 0'ın
+kendisi dama tahtası çıktı ve katalogdan kaldırıldı — o parçalarda tile de
+dama gösteriyordu, üstelik mağazada seçilemeyen bir rengi tanıtıyordu.
+
+Liste artık elle tutulmuyor, `data/removed.lua`'dan **türetiliyor**:
+`mk_retile.py` her parça için hayatta kalan en küçük numaralı dokuyu bulur,
+0 değilse tile'ı ondan çizdirir. Şu an 9 parça (glasses 1, hat 3/9/10,
+jacket 2, pants 2, shoes 0/2/11).
+
+```bash
+python mk_retile.py ../../data/removed.lua dump/male.json retile.json
+python retile.py map8 retile.json out_enh 512
+```
 
 ### Boş yer tutucular (6 parça, katalogdan çıkarıldı)
 
